@@ -1,0 +1,23 @@
+# Frontier LLMs Tech Report
+
+- DeepSeek
+    - [DeepSeek V2](./DeepSeek-V2.pdf)
+    - [DeepSeek V3](./DeepSeek-V3.pdf)
+    - [DeepSeek V3.2](./DeepSeek-V3.2.pdf)
+    - [DeepSeek V4](./DeepSeek-V4.pdf)
+    - [DeepSeek V4.1](./DeepSeek-V4.1.pdf)
+- GLM
+    - [GLM-5](./GLM-5.pdf)
+    - [GLM-5.2](https://z.ai/blog/glm-5.2)
+    - [GLM-5.3](https://z.ai/blog/glm-5.3)
+- Kimi
+    - [Kimi K2](./Kimi-K2.pdf)
+    - [Kimi K2.5](./Kimi-K2.5.pdf)
+    - [Kimi K3](./Kimi-K3.pdf)
+- Minimax
+    - [Minimax M2](https://www.minimax.io/news/minimax-m25)
+    - [Minimax M2.7](https://www.minimax.io/news/minimax-m27-en)
+    - [Minimax M3](https://www.minimax.io/blog/minimax-m3)
+- Qwen
+    - [Qwen 3](./Qwen-3.pdf)
+    - [Qwen 3.8 Next](./Qwen-3.8-Next.pdf)
