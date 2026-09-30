@@ -209,3 +209,11 @@ poetry.toml
 pyrightconfig.json
 
 # End of https://www.toptal.com/developers/gitignore/api/macos,python
+
+### Hugo site (docs/ 是站点根目录) ###
+# 生成物不入库：内容由 tools/sync.py 从笔记产出，CI 每次构建前重新生成。
+# 需要提交的只有脚手架：hugo.yaml、layouts/、assets/、themes/PaperMod(子模块)。
+/docs/content/
+/docs/public/
+/docs/resources/
+/docs/.hugo_build.lock

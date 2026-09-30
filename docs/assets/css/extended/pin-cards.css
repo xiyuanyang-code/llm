@@ -1,0 +1,61 @@
+/* 首页置顶卡片。
+ *
+ * 只有 "Above All"（README 的总览）使用 pin，其余文章一律不带 pin，
+ * 所以这里刻意只保留一种强调色，不做彩色调色板。
+ *
+ * layouts/list.html 会依据 frontmatter 的 pin 字段注入 pin-<name> class：
+ *   pin = 'intro'  -> <article class="post-entry pin-intro">
+ * tools/sync.py --check 会校验 status.json 里用到的 pin 名字在这里有对应规则，
+ * 避免出现「写了 pin 但没有配色」的静默降级。
+ */
+
+:root {
+  --pin-accent: #3b82f6; /* blue-500 */
+}
+
+:root[data-theme="dark"] {
+  --pin-accent: #60a5fa; /* blue-400 */
+}
+
+/* 卡片底色 + 左侧强调条 */
+.post-entry.pin-intro {
+  border-left: 4px solid var(--pin-accent);
+  background: color-mix(in srgb, var(--pin-accent) 7%, var(--entry));
+  border-color: color-mix(in srgb, var(--pin-accent) 35%, var(--border));
+}
+
+/* 给标题留出右上角徽标的位置，避免文字被盖住 */
+.post-entry.pin-intro .entry-header {
+  padding-right: 3.5rem;
+}
+
+/* 置顶徽标 */
+.post-entry.pin-intro::after {
+  content: "Pinned";
+  position: absolute;
+  top: 12px;
+  right: 16px;
+  font-size: 0.72rem;
+  font-weight: 600;
+  line-height: 1;
+  padding: 5px 10px;
+  border-radius: 999px;
+  color: #fff;
+  background: var(--pin-accent);
+  pointer-events: none; /* 点击穿透到下面的 entry-link */
+}
+
+/* 深色模式下强调色偏亮，徽标改用深色文字保证对比度 */
+:root[data-theme="dark"] .post-entry.pin-intro::after {
+  color: #172554;
+}
+
+/* 转换器在图片缺失位置插入的占位 */
+.md-content .asset-missing {
+  display: inline-block;
+  border-left: 3px solid #d97706;
+  background: color-mix(in srgb, #d97706 10%, transparent);
+  padding: 0.35rem 0.7rem;
+  border-radius: 4px;
+  font-size: 0.9rem;
+}

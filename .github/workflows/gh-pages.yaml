@@ -1,0 +1,90 @@
+name: Deploy Hugo site to Pages
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+    inputs:
+      hugoVersion:
+        description: "Hugo Version"
+        required: false
+        default: "0.146.0"
+
+# Allow one concurrent deployment
+concurrency:
+  group: "pages"
+  cancel-in-progress: true
+
+defaults:
+  run:
+    shell: bash
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    env:
+      HUGO_VERSION: ${{ github.event.inputs.hugoVersion || '0.146.0' }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          # PaperMod 主题以子模块形式挂在 docs/themes/PaperMod，用固定的 commit，
+          # 不做 `submodule update --remote`，否则主题会在部署途中被静默升级。
+          submodules: recursive
+          fetch-depth: 1
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12' # 转换器只用标准库，无需 pip install
+
+      # 先从笔记生成 docs/content。清单写错（源文件不存在、slug 重复、pin 非法、
+      # 内部链接指向未发布的笔记）会在这里直接失败，不会发出一个坏站点。
+      - name: Generate site content from Obsidian notes
+        run: python3 tools/sync.py
+
+      - name: Install Hugo CLI
+        run: |
+          wget -O ${{ runner.temp }}/hugo.deb \
+            https://github.com/gohugoio/hugo/releases/download/v${HUGO_VERSION}/hugo_extended_${HUGO_VERSION}_linux-amd64.deb
+          sudo dpkg -i ${{ runner.temp }}/hugo.deb
+
+      # PaperMod v8 目前全是纯 CSS，标准版也能构建；但一旦主题或自定义样式引入
+      # SCSS，就必须是 extended。这里直接装 extended 并断言，避免将来某天静默失败。
+      - name: Verify Hugo edition
+        run: hugo version | tee /dev/stderr | grep -q extended
+
+      - name: Setup Pages
+        id: pages
+        uses: actions/configure-pages@v5
+        with:
+          # 仓库还没启用 Pages 时自动开启（build type 会设为 workflow），
+          # 省掉手工去 Settings → Pages 点一遍
+          enablement: true
+
+      - name: Build with Hugo
+        run: |
+          hugo --source docs --gc \
+            --baseURL "${{ steps.pages.outputs.base_url }}/"
+
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: ./docs/public
+
+  deploy:
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    runs-on: ubuntu-latest
+    needs: build
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4

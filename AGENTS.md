@@ -4,21 +4,36 @@
 
 This repository is a Chinese-language learning notebook for LLM training and architecture. Keep material grouped by topic:
 
-- `README.md` defines the repository scope and high-level study outline.
-- `model_arch/` contains architecture notes; `Attentions.md` is the current attention-mechanism chapter.
+- `README.md` defines the repository scope and high-level study outline. It is also published verbatim as the website home page, so keep it reader-facing prose.
+- `model_arch/` contains architecture notes; the current chapters are `Advanced LLMs 1 (Attentions).md` through `Advanced LLMs 5 (Mixture of Experts).md`.
 - `infra/` documents training and inference systems. Add a topic directory when a subject needs multiple articles, as with `infra/slime/`.
 - `pre-training/`, `mid-training/`, and `post-training/` are reserved for training-recipe notes.
-- `report/` indexes vendor technical reports and stores locally referenced PDFs.
+- `report/` indexes vendor technical reports and stores locally referenced PDFs. It is intentionally **not** published (the PDFs are gitignored).
 - `images/` holds diagrams embedded by Markdown articles.
+- `tools/` holds `sync.py` (the Obsidian → Hugo converter) and `status.json` (the publishing manifest). See `tools/README.md`.
+- `docs/` is the Hugo project root for the published site. See `docs/README.md`.
 
 Place new content in the narrowest applicable directory and update the nearest `README.md` index when readers need a discoverable entry point.
 
 ## Development and Verification
 
-There is no build tool, package manifest, or automated test command. Validate documentation changes locally by opening the edited Markdown in a renderer such as Obsidian or GitHub preview. Before committing, confirm that:
+Notes are the source of truth and are never modified by tooling. Publishing is driven by `tools/sync.py`, which reads `tools/status.json` and generates the Hugo content under `docs/content/` (gitignored — never edit or commit it).
 
+```bash
+python3 tools/sync.py --check                     # validate manifest/sources without writing
+python3 tools/sync.py && hugo serve --source docs # regenerate + preview at localhost:1313/llm/
+```
+
+`--check` fails on manifest errors (missing source file, duplicate slug, unknown `pin`, internal link pointing at an unpublished note) and only warns about missing images and notes absent from `status.json`. Publishing is always explicit: a note that is not listed in `status.json` is not published.
+
+Pushing to `main` re-runs the converter in CI (`.github/workflows/gh-pages.yaml`) and deploys to GitHub Pages, so committed notes go live without any local build.
+
+Before committing, confirm that:
+
+- the note you added is listed in `tools/status.json` with an explicit `date` (most notes have no git history to infer one from) and an ASCII `slug`;
+- `python3 tools/sync.py --check` is clean;
 - relative links resolve from the article that contains them;
-- image paths such as `../images/sparse_attn.png` render correctly;
+- image embeds such as `![[sparse_attn.png]]` point at a file that exists in `images/`;
 - new report links point to an existing PDF or a stable official URL.
 
 Use `git status` and `git diff --check` from this directory to review intended changes and catch whitespace errors.

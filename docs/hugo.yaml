@@ -1,0 +1,122 @@
+baseURL: "https://xiyuanyang-code.github.io/llm/"
+locale: "zh-cn"
+title: LLM Notes
+theme: PaperMod
+
+enableRobotsTXT: true
+buildDrafts: false
+buildFuture: false
+buildExpired: false
+
+minify:
+  disableXML: true
+  minifyOutput: true
+
+params:
+  env: production # to enable google analytics, opengraph, twitter-cards and schema.
+  title: LLM Notes
+  math: true # KaTeX, loaded by layouts/_partials/extend_head.html
+  description: "LLM 架构、训练与推理的中文学习笔记：Attention 变体、Normalization、RoPE、解码与训练系统。"
+  keywords: [llm, attention, transformer, rope, mla, moe, infra]
+  author: ["Xiyuan Yang"]
+  DateFormat: "2006-01-02"
+  defaultTheme: auto # dark, light
+  disableThemeToggle: false
+
+  ShowReadingTime: true
+  ShowShareButtons: false
+  ShowPostNavLinks: true
+  ShowBreadCrumbs: true
+  ShowCodeCopyButtons: true
+  ShowWordCount: true
+  ShowRssButtonInSectionTermList: true
+  UseHugoToc: true
+  disableSpecial1stPost: false
+  disableScrollToTop: false
+  hidemeta: false
+  hideSummary: false
+  showtoc: true
+  tocopen: false
+
+  # 首页卡片列表取 content/posts 下的 page + section。
+  # 必须写在 params 下：layouts/list.html 读的是 site.Params.mainSections。
+  mainSections: ["posts"]
+
+  # home-info 模式：首页顶部的介绍卡片
+  homeInfoParams:
+    Title: "LLM Notes \U0001F44B"
+    Content: "Full Stack Advanced LLM Notes, always updating."
+
+  socialIcons:
+    - name: github
+      url: "https://github.com/xiyuanyang-code/llm"
+    - name: web
+      url: "https://xiyuanyang-code.github.io/llm/"
+
+  # 搜索基于 index.json，需要 outputs.home 里包含 JSON
+  fuseOpts:
+    isCaseSensitive: false
+    shouldSort: true
+    location: 0
+    distance: 1000
+    threshold: 0.4
+    minMatchCharLength: 0
+    limit: 10
+    keys: ["title", "permalink", "summary", "content"]
+
+menu:
+  main:
+    # identifier 会被 PaperMod 拿去跑 site.GetPage（header.html 里判断搜索页），
+    # 所以必须是能唯一解析的页面路径，不能是裸名字（如 "model-arch" 会报 ambiguous）。
+    - identifier: /posts/model-arch
+      name: Model Architecture
+      url: /posts/model-arch/
+      weight: 10
+    - identifier: /posts/infra
+      name: Infra
+      url: /posts/infra/
+      weight: 20
+    - identifier: /search
+      name: Search
+      url: /search/
+      weight: 30
+
+pygmentsUseClasses: true
+markup:
+  highlight:
+    noClasses: false
+  goldmark:
+    renderer:
+      unsafe: true # 转换器会输出 <mark> 等内联 HTML
+    extensions:
+      # 这两项本来默认就是开的，显式写出来是为了防止 Hugo 默认值变化
+      footnote: true # 笔记里的 [^1] 脚注
+      linkify: true # 正文里裸 URL 自动成链
+
+      # 必须开启：把公式从 markdown 处理里隔离出来。
+      # 不开的话，公式里的 _ 会被当作斜体标记、' 会被 typographer 换成弯引号，
+      # 例如 `\mathbf{p}_t^{\text{slc}}[j] = \sum_{m=0}...` 的 1、2 个下划线会被配成
+      # 一对 <em>，KaTeX 拿到的就是残缺字符串，整个公式渲染失败。
+      passthrough:
+        enable: true
+        delimiters:
+          block:
+            - ['$$', '$$']
+            - ['\[', '\]']
+          inline:
+            - ['$', '$']
+            - ['\(', '\)']
+
+      # 技术笔记里到处是 `--flag`、`don't`、`l'` 这类写法，
+      # typographer 会把它们换成 en-dash / 弯引号，正文也会被改坏。
+      typographer:
+        disable: true
+
+outputs:
+  home:
+    - HTML
+    - RSS
+    - JSON # necessary for search
+
+ignoreLogs:
+  - 'warning-goldmark-raw-html'

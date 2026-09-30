@@ -1,0 +1,158 @@
+{
+  "schemaVersion": 1,
+
+  "site": {
+    "title": "LLM Notes",
+    "baseURL": "https://xiyuanyang-code.github.io/llm/",
+    "description": "LLM 架构、训练与推理的中文学习笔记。",
+    "author": "Xiyuan Yang"
+  },
+
+  "scanRoots": ["model_arch", "infra", "pre-training", "mid-training", "post-training"],
+  "assetRoot": "images",
+  "missingImagePolicy": "placeholder",
+
+  "sections": [
+    {
+      "id": "above-all",
+      "slug": "above-all",
+      "index_source": "README.md",
+      "title": "Above All",
+      "description": "学习 LLM 最核心的技术，始终 follow 时代的前沿，同时 top down 学习对应的基础知识。",
+      "date": "2026-09-18",
+      "tags": ["llm", "roadmap", "overview", "model-architecture", "infra", "training-recipes", "pre-training", "mid-training", "post-training"],
+      "weight": -100,
+      "pin": "intro",
+      "toc": true
+    },
+    {
+      "id": "model-arch",
+      "slug": "model-arch",
+      "title": "Model Architecture",
+      "description": "基座模型架构",
+      "date": "2026-09-22",
+      "tags": ["model-architecture", "transformer", "attention", "architecture"],
+      "weight": -80,
+      "toc": true
+    },
+    {
+      "id": "infra",
+      "slug": "infra",
+      "parent": null,
+      "index_source": "infra/README.md",
+      "title": "LLM Infra",
+      "description": "LLM Infra 源码解读",
+      "date": "2026-09-18",
+      "tags": ["infra", "training-system", "inference-system", "codebase"],
+      "weight": -70,
+      "toc": true
+    },
+    {
+      "id": "slime",
+      "slug": "slime",
+      "parent": "infra",
+      "title": "Slime 101",
+      "description": "THUDM slime：连接 Megatron 与 SGLang、为 RL scaling 设计的 LLM post-training 框架。",
+      "date": "2026-09-18",
+      "tags": ["slime", "rl", "post-training", "megatron", "sglang", "ray"],
+      "weight": 100,
+      "toc": true
+    }
+  ],
+
+  "posts": [
+    {
+      "id": "attentions",
+      "source": "model_arch/Advanced LLMs 1 (Attentions).md",
+      "section": "model-arch",
+      "slug": "attentions",
+      "title": "Advanced LLMs 1: Attentions",
+      "description": "从 MHA、MQA/GQA、MLA 到稀疏注意力（LongFormer / StreamingLLM / NSA / DSA / MSA）、线性注意力（Mamba / Gated DeltaNet）与 Flash Attention。",
+      "date": "2026-09-22",
+      "tags": ["attention", "mha", "mqa", "gqa", "mla", "kv-cache", "sparse-attention", "linear-attention", "mamba", "flash-attention", "deepseek", "glm", "qwen", "minimax", "transformer"],
+      "weight": 10,
+      "toc": true
+    },
+    {
+      "id": "normalizations-ffn-rope",
+      "source": "model_arch/Advanced LLMs 2 (Nomarlizations, FFNs & RoPE).md",
+      "section": "model-arch",
+      "slug": "normalizations-ffn-rope",
+      "title": "Advanced LLMs 2: Normalizations, FFNs & RoPE",
+      "description": "Pre-Norm / Post-Norm 与 RMSNorm 的推导、激活函数与 SwiGLU FFN，以及 RoPE 的旋转矩阵与长度外推（PI / NTK-aware / YaRN）。",
+      "date": "2026-09-22",
+      "tags": ["normalization", "layernorm", "rmsnorm", "batchnorm", "ffn", "swiglu", "activation", "rope", "position-encoding", "ntk", "yarn", "length-extrapolation", "transformer"],
+      "weight": 20,
+      "toc": true
+    },
+    {
+      "id": "decoding",
+      "source": "model_arch/Advanced LLMs 3 (Decoding).md",
+      "section": "model-arch",
+      "slug": "decoding",
+      "title": "Advanced LLMs 3: Decoding",
+      "description": "Prefill 与 Decode 两个阶段的 FLOPs 与 Memory-Bound 分析，以及 Speculative Decoding、Multi-Token Prediction。",
+      "date": "2026-09-22",
+      "tags": ["decoding", "prefill", "kv-cache", "roofline", "memory-bound", "speculative-decoding", "multi-token-prediction", "inference"],
+      "weight": 30,
+      "toc": true
+    },
+    {
+      "id": "optimizers",
+      "source": "model_arch/Advanced LLMs 4 (Optimizers).md",
+      "section": "model-arch",
+      "slug": "optimizers",
+      "title": "Advanced LLMs 4: Optimizers",
+      "description": "预训练优化器与训练稳定性。",
+      "date": "2026-09-22",
+      "tags": ["optimizer", "training-stability", "pre-training"],
+      "weight": 40,
+      "toc": true,
+      "stub": true
+    },
+    {
+      "id": "mixture-of-experts",
+      "source": "model_arch/Advanced LLMs 5 (Mixture of Experts).md",
+      "section": "model-arch",
+      "slug": "mixture-of-experts",
+      "title": "Advanced LLMs 5: Mixture of Experts",
+      "description": "MoE 的路由、负载均衡与训练。",
+      "date": "2026-09-22",
+      "tags": ["moe", "mixture-of-experts", "routing", "load-balancing", "sparse-model"],
+      "weight": 50,
+      "toc": true,
+      "stub": true
+    },
+    {
+      "id": "slime-training",
+      "source": "infra/slime/slime-training.md",
+      "section": "slime",
+      "slug": "slime-training",
+      "title": "Slime: 训练主流程",
+      "description": "从 train.py 入口出发，梳理 Slime 如何用 Ray 封装 actor，并挂接 Megatron 在 GPU 上完成训练。",
+      "date": "2026-09-18",
+      "tags": ["slime", "megatron", "ray", "rl", "post-training", "actor", "rollout", "distributed-training"],
+      "weight": 110,
+      "toc": true
+    }
+  ],
+
+  "pages": [
+    {
+      "id": "home",
+      "kind": "home",
+      "title": "LLM Notes"
+    },
+    {
+      "id": "search",
+      "kind": "search",
+      "title": "Search",
+      "description": "在全部笔记中做全文检索。"
+    }
+  ],
+
+  "skipped": [
+    { "source": "AGENTS.md", "reason": "仓库内的 agent 约定，不对外发布" },
+    { "source": "report/README.md", "reason": "report 章节的 PDF 被 .gitignore 排除，链接会死链" }
+  ]
+}
