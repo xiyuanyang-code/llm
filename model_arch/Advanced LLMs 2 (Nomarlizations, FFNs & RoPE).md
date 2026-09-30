@@ -1,4 +1,3 @@
-
 ## What is in Standard Transformers
 
 - 在 Input Embedding 上进行 Position Embedding 的嵌入
@@ -230,7 +229,7 @@ NTK-by-parts 吸收了 NTK 高频和低频的在压缩时不一致的问题，�
 
 此外，还有 Dynamic-NTK，只在推理上下文长度超过 $L$ 时引入对应的策略 (PI, NTK-Aware, NTK-Select, YaRN)，在正常的上下文长度时，保持为 $L$ 不变。
 
-![[Pasted image 20260922215047.png]]
+![[rope.png]]
 
 
 

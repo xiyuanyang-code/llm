@@ -142,6 +142,8 @@ DeepSeek-V2 提出了一种新的 Attention 机制 [^3], 叫做 Multihead Latent
 
 最终，对于 attention score 的输出：$\mathbf{o}_{t,i} = \sum_{j=1}^{t} \text{Softmax}_j \left( \frac{\mathbf{q}_{t,i}^T \mathbf{k}_{j,i}}{\sqrt{d_h^C + d_h^R}} \right) \mathbf{v}_{j,i}^C$， $W^{UV}$ 矩阵可以和 $W^O$ 矩阵吸收，保证 MLA 在极大减少缓存占用的同时，提升 ==模型推理的速度==。
 
+> 相当于提取出来 $W^{UV}$ 矩阵出来，让尽可能多的数学等价运算可以在低维空间中进行。
+
 ## Sparse Attention
 
 接下来，我们来讲一类非常特殊的 attention 加速优化，叫做 sparse attention。
@@ -227,7 +229,7 @@ $$\text{Attention}(q, K, V) = g_c \cdot \text{Attn}(q, \tilde{K}_c, \tilde{V}_c)
 - Token Selection
 	- 在 Selection 过程中，依然是 block-based selection 来加速 GPU 硬件的加速
 	- 假设 $l'$ 是 token selection 的分块长度，$l$ 是 token compression 的分块长度，$d$ 是原始分块的长度，且 $d$ 是 $l$ 和 $l'$ 的因数。
-	- $p_t^{cmp} \in \mathbb{R}^\left\lfloor \frac{t-l}{d} \right\rfloor$ 是 compress 后形成的注意力得分，注意因为我们分了 block，所以这个矩阵的维度是除以了 block-size $d$ 的 (但是单次 compress 的长度大于 $d$)
+	- $p_t^{cmp} \in \mathbb{R}^{\left\lfloor \frac{t-l}{d} \right\rfloor}$ 是 compress 后形成的注意力得分，注意因为我们分了 block，所以这个矩阵的维度是除以了 block-size $d$ 的 (但是单次 compress 的长度大于 $d$)
 	- Selection Block 会做一个 Pooling 的操作
 		- $$\mathbf{p}_t^{\text{slc}}[j] = \sum_{m=0}^{\frac{l'}{d}-1} \sum_{n=0}^{\frac{l}{d}-1} \mathbf{p}_t^{\text{cmp}}\left[ \frac{l'}{d}j - m - n \right]$$
 		- 注意，selection block 本身就包含很多 block，但是 selection block 本身是不重叠的
@@ -297,21 +299,95 @@ https://z.ai/blog/glm-5.3-flash
 
 ## Linear Attention
 
-https://arxiv.org/pdf/2406.06484
+### Basic Linear Attentions
 
-### RNN and LSTM
+Linear Attention 从另一个视角解决了这个问题，我们首先从最基本的 Linear Attention 计算原理出发。
 
-### Linear Attention
+考虑最基本的因果掩码的 Attention 计算，一对注意力的计算公式如下:
 
+$$Y_i = \frac{\sum_{j=1}^{i} \exp(Q_i K_j^T) V_j}{\sum_{j=1}^{i} \exp(Q_i K_j^T)}$$
+
+我们假设我们对架构做如下改进，引入函数 $\phi$
+
+$$
+Y_i = \frac{\sum_{j=1}^{i} \left( \phi(Q_i K_j^T) \right) V_j}{\sum_{j=1}^{i} \phi(Q_i K_j)^T}
+$$
+同时，我们规定 $\phi(x)$ 具备很好的**吸收性质**: $\phi(xy) = \phi(x) \phi(y)$，因此，上式可以展开为：
+
+$$Y_i = \frac{\sum_{j=1}^{i} \left( \phi(Q_i) \phi(K_j)^T \right) V_j}{\sum_{j=1}^{i} \phi(Q_i) \phi(K_j)^T} = \frac{ \phi(Q_i)\sum_{j=1}^{i}  (\phi(K_j)^T  V_j)}{\phi(Q_i) \sum_{j=1}^{i}  \phi(K_j)^T}$$
+
+> 注意 这里 $\phi(Q_i)$ 不可以被约掉，因为上下都是向量的乘法。
+
+我们考虑一个新的 token 计算是，需要做什么样的计算：
+- 首先需要计算 $\phi(Q_i)$, $\phi(K_i)$
+- 此时，新 token 不需要和过去的 token 做 attention 计算，只需要取出对应缓存的 $\phi(K_j)^T  V_j$ 的部分和对应的分母求和，求出 $Y_i$
+- 因此，此时新 token 的计算是 $O(1)$ 级别的时间复杂度。
+
+#### RNN View
+
+我们从 RNN 的视角思考这个结构。我们把上面公式里括号内的累加项定义为两个固定大小的矩阵状态：
+
+- **隐状态矩阵** $S_i = \sum_{j=1}^{i} \phi(K_j)^T V_j$
+- **归一化向量** $Z_i = \sum_{j=1}^{i} \phi(K_j)^T$
+由于这是从 $1$ 到 $i$ 的逐步累加，它天然就具备了**递推**特性。每当新来一个词 $i$ 时，我们根本不需要回头去看所有历史数据，只需要用上一个时刻的状态进行极其简单的更新：
+
+$$\begin{aligned} S_i &= S_{i-1} + \phi(K_i)^T V_i \\ Z_i &= Z_{i-1} + \phi(K_i)^T \end{aligned}$$
+
+> 从 RNN 的视角分析，在每一次新 token 计算时，过往的所有 token 信息全部被引入到一个固定大小的隐状态矩阵中 $S_i$, 因此，在长上下文时会存在信息损失。
 ### Mamba
 
-https://arxiv.org/pdf/2312.00752
+我们从 RNN 的视角规范化 Linear Attention 的迭代：
 
+- 隐状态的更新: $h(t) = f(h_{t-1}, x_t)$
+- 前向计算，更新出当前的输出: $y_t = g(h_t, x_t)$
+
+在 Linear Attention 中，更新结构的函数如下:
+
+- $h(t) = h(t-1) + \phi(K_i)^T V_i$
+- $y(t) = \phi(Q_i) h(t)$
+
+我们考虑隐状态的更新公式: $h(t) = h(t-1) + \phi(K_i)^T V_i$，我们可以把隐状态的更新当做是：
+- 过去的历史状态
+- 此步骤引入的新状态
+
+很显然，Linear Attention 的更新是一个相对粗糙的步骤，两者进行简单的加和，导致模型无法学到很好的注意力分布。
+
+在 Mamba[^9] 论文中，提出了一种更新的架构，具体公式表示如下:
+
+$$
+h_t = A_t h_{t-1} + B_t x_t
+$$
+$$
+y_t = C_t
+$$
+其中关键的参数变量 $A_t$, $B_t$, $C_t$ 都是依赖当前状态步骤下的 $t$ 输入。
+
+> We identify that a key weakness of such models is their inability to perform content-based reasoning, and make several improvements. First, simply letting the SSM parameters be functions of the input addresses their weakness with discrete modalities, **allowing the model to selectively propagate or forget information** along the sequence length dimension depending on the current token.
+
+然而，由于 Mamba 的架构创新属于比较激进的结构创新，且目前暂不属于主流的 LLM 架构，因此暂时不作为核心内容介绍。
 ### Mamba2
 
-https://arxiv.org/abs/2405.21060
+Mamba2[^10] 仍然保持相同的整体更新策略，和 Mamba1 结构非常类似。只不过这一次在输出层引入优化。
+
+![[mamba.png]]
+
+### Gated Delta Net
+
+在介绍 Gated DeltaNet 的基础之上，我们先介绍基本的 DeltaNet 结构：论文 Linear Transformers Are Secretly Fast Weight Programmers [^12] 将上述核函数形式的 linear attention 和九十年代的 fast weight controllers 结合，作者首先针对当前 Linear Attention 的结构，提出了如下局限性：
+
+- Linear Attention 本质上是维护一个隐状态矩阵 $S_t$, 这个矩阵能够维持的信息是有限的，无法应对持续增长的上下文。从正交性的角度解释，当序列长度超过了对应 key 的 dimension length，就处于一种过容量状态。此时，模型会被迫学会更新当前的容量状态。
+
+
+
+
+
+https://arxiv.org/pdf/2406.06484
 
 ### Kimi Delta Attention
+
+
+
+
 
 ## Flash Attention
 
@@ -341,7 +417,7 @@ https://github.com/dao-ailab/flash-attention
 [^6]: https://arxiv.org/pdf/2309.17453
 [^7]: https://arxiv.org/pdf/2502.11089
 [^8]: https://arxiv.org/abs/2606.13392
-
-
-
-
+[^9]: https://arxiv.org/pdf/2312.00752
+[^10]: https://arxiv.org/abs/2405.21060
+[^11]: https://arxiv.org/pdf/2412.06464
+[^12]: https://arxiv.org/abs/2102.11174
