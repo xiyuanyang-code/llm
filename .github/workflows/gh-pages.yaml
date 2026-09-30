@@ -60,13 +60,14 @@ jobs:
       - name: Verify Hugo edition
         run: hugo version | tee /dev/stderr | grep -q extended
 
+      # 不要在这里加 `enablement: true`。它会用 GITHUB_TOKEN 去调 Pages 的
+      # "Create a Pages site" 接口，而该接口要求仓库 admin 权限，GITHUB_TOKEN
+      # 永远拿不到，只会得到 "Resource not accessible by integration" 并让整次构建失败。
+      # Pages 必须在网页端手工启用一次（只需一次）：
+      #   Settings → Pages → Build and deployment → Source = "GitHub Actions"
       - name: Setup Pages
         id: pages
         uses: actions/configure-pages@v5
-        with:
-          # 仓库还没启用 Pages 时自动开启（build type 会设为 workflow），
-          # 省掉手工去 Settings → Pages 点一遍
-          enablement: true
 
       - name: Build with Hugo
         run: |
