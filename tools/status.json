@@ -57,6 +57,16 @@
       "tags": ["slime", "rl", "post-training", "megatron", "sglang", "ray"],
       "weight": 100,
       "toc": true
+    },
+    {
+      "id": "post-training",
+      "slug": "post-training",
+      "title": "Post Training",
+      "description": "后训练算法和前沿",
+      "date": "2026-10-08",
+      "tags": ["post-training", "rl", "sft", "opd", "training-recipes"],
+      "weight": 200,
+      "toc": true
     }
   ],
 
@@ -133,6 +143,18 @@
       "date": "2026-09-18",
       "tags": ["slime", "megatron", "ray", "rl", "post-training", "actor", "rollout", "distributed-training"],
       "weight": 110,
+      "toc": true
+    },
+    {
+      "id": "frontier-post-training",
+      "source": "post-training/Frontier Post Training.md",
+      "section": "post-training",
+      "slug": "frontier-post-training",
+      "title": "DeepSeek V4.1 Post Training",
+      "description": "DeepSeek V4.1 的后训练管线：可执行环境的构建、agentic RL 的两个 scale 维度、DSec 与 MOPD，以及后训练 infra。",
+      "date": "2026-10-08",
+      "tags": ["post-training", "rl", "agentic-rl", "deepseek", "sft", "opd", "model-merging", "dsec", "mopd", "scaffold", "environment", "tech-report"],
+      "weight": 210,
       "toc": true
     }
   ],

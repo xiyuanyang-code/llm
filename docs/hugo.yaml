@@ -8,6 +8,11 @@ buildDrafts: false
 buildFuture: false
 buildExpired: false
 
+# 首页是全部内容的索引，不要把新内容挤到第 2 页去（默认每页只有 10 条，
+# 内容一旦超过 10 条，最新加的专题/文章就会从首页"消失"）。
+pagination:
+  pagerSize: 50
+
 minify:
   disableXML: true
   minifyOutput: true
