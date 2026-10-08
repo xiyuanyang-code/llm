@@ -396,6 +396,15 @@ class Doc:
         out = []
         for is_code, lines in blocks:
             if is_code:
+                info = lines[0].strip().lstrip("`~").strip()
+                if not info:
+                    # Hugo 0.146 会把没有语言标记的围栏当成 GoAT ASCII 图渲染成 SVG
+                    # （等宽文本变成一张按容器宽度拉伸的矢量图，字号完全失控）。
+                    # 显式写上 text 就永远走普通代码块，不受 Hugo 版本影响。
+                    self.report.warn(
+                        f"{self.source_rel} 有未标注语言的代码块，"
+                        "建议把围栏写成 ```text（旧版 Hugo 会把它渲染成 GoAT SVG 图形）"
+                    )
                 out.append("\n".join(lines))
                 continue
             if self.demote_h1:

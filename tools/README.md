@@ -101,3 +101,4 @@ python3 tools/sync.py                              # 只生成，不预览
 
 - **先切代码块再做任何重写**。`slime-training.md` 的 python 代码块里有 `if self.role == "critic":` 这类 `==` 比较运算符，不先隔离代码块就会被高亮替换改坏。
 - **图片走 leaf page bundle + 相对路径**。站点挂在 `/llm/` 子路径下，写死的 `/images/x.png` 会解析到域名根目录而 404；相对路径由 PaperMod 的 `render-image.html` 通过 `.PageInner.Resources` 解析，自动带上正确前缀。
+- **围栏一律写明语言**（ASCII 图写 ```` ```text ````）。Hugo 0.146 会把**没有语言标记**的围栏当成 GoAT 渲染成 SVG 矢量图，等宽文本会变成一张按容器宽度拉伸的图，字号完全失控。转换器会在 sync 阶段对未标注语言的围栏报警告。`HUGO_VERSION` 见 `.github/workflows/gh-pages.yaml`，与本地 `brew install hugo` 保持一致。

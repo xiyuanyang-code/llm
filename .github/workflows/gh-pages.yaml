@@ -9,7 +9,7 @@ on:
       hugoVersion:
         description: "Hugo Version"
         required: false
-        default: "0.146.0"
+        default: "0.167.0"
 
 # Allow one concurrent deployment
 concurrency:
@@ -29,7 +29,9 @@ jobs:
   build:
     runs-on: ubuntu-latest
     env:
-      HUGO_VERSION: ${{ github.event.inputs.hugoVersion || '0.146.0' }}
+      # 与本地 `brew install hugo` 的版本保持一致，避免出现「本地预览正常、
+      # 线上不一样」。升级本地 Hugo 时记得同步改这里（两处都要改）。
+      HUGO_VERSION: ${{ github.event.inputs.hugoVersion || '0.167.0' }}
     steps:
       - name: Checkout
         uses: actions/checkout@v4
