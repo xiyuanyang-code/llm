@@ -26,7 +26,7 @@ train.py(仓库根目录)
 
 继承关系:
 
-```
+```text
 MegatronTrainRayActor        slime/backends/megatron_utils/actor.py
     └── TrainRayActor        slime/ray/train_actor.py(通用训练 actor 逻辑)
         └── RayActor         slime/ray/ray_actor.py(最底层的 Ray actor 基类)

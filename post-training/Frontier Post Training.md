@@ -51,7 +51,7 @@ NUMA: Non-Uniform Memory Access，比如 NUMA1 的 CPU 访问 NUMA1 的内存快
 
 在 DSec 中，每一个 Worker VM 都被绑定到一个 NUMA domain (硬件绑定)
 
-```
+```text
 Physical Machine
       │
       ├── Worker VM 1
@@ -79,7 +79,7 @@ Physical Machine
 - 不同的 reasoning effort 通过一个数字传递到 sys-prompt 中
 - 在训练过程中，对多个 reasoning effort 实现 responses 采样，但是在算 advantage 的时候，只能 group  $(x, b)$ 内部的样本进行计算，不可以横跨样本
 - 对于一个轨迹 $r_{b,j}^{\text{len}}$，进行长度惩罚
-	- $r_{b,j}^{\text{len}} = - \min \{ C_\max, k(b) \frac{l_{b,j}}{L_{norm}} \}$
+	- $r_{b,j}^{\text{len}} = - \min \{ C_{\max}, k(b) \frac{l_{b,j}}{L_{norm}} \}$
 		- Cmax 是最大惩罚的兜底
 		- $k(b)$ 是一个随 $b$ 进行指数衰减的系数
 			- b 越大，k(b) 越小，对应的惩罚强度就越小
