@@ -21,3 +21,7 @@
 - Qwen
     - [Qwen 3](./Qwen-3.pdf)
     - [Qwen 3.8 Next](./Qwen-3.8-Next.pdf)
+- Mimo
+	- [Mimo V2](./MiMo-V2.pdf)
+	- [Mimo V2.5](https://mimo.xiaomi.com/mimo-v2-5)
+	- [Mimo V2.6](./Mimo-V2.6.pdf)
