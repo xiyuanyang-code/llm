@@ -54,7 +54,7 @@ python3 tools/sync.py                              # 只生成，不预览
 | `index_source` | | 用作专题落地页正文的笔记；不填则生成一段占位说明 |
 | `title` / `description` | ✅ | 卡片标题与摘要 |
 | `date` | ✅ | `YYYY-MM-DD` |
-| `tags` / `weight` | | `weight` 为负会让专题卡片置顶，排在文章前面 |
+| `tags` | | 会生成 `/tags/<tag>/` 页 |
 | `pin` | | 置顶配色名，取值必须是 `docs/assets/css/extended/pin-cards.css` 里定义过的 |
 | `toc` | | 是否显示目录 |
 
@@ -67,9 +67,20 @@ python3 tools/sync.py                              # 只生成，不预览
 | `slug` | ✅ | URL 段，小写 ASCII kebab-case |
 | `title` / `description` / `date` | ✅ | 卡片与页面元信息 |
 | `tags` | | 会生成 `/tags/<tag>/` 页 |
-| `weight` | | 同一列表内的排序，越小越靠前 |
+| `weight` | | **通常不用填**，首页顺序由 `sync.py` 自动生成；写了则覆盖自动值，用于强制排序 |
 | `stub` | | `true` 时，源文件为空则生成「🚧 撰写中」占位正文 |
 | `demoteH1` | | 默认 `true`，把正文里的一级标题降为二级（避免与页面标题打架） |
+
+### 首页顺序（不用手填 weight）
+
+首页卡片顺序由 `sync.py` 的 `compute_weights()` 自动生成，规则两条：
+
+1. **专题**永远排在文章前面，彼此之间按 `status.json` 里 `sections` 数组的书写顺序 —— 想调整专题顺序就调整数组顺序。
+2. **文章**按 `date` 从新到旧；**同一天**的保持 `posts` 数组里的书写顺序（所以一个系列的多篇按清单顺序读下来）。
+
+也就是说，新写的笔记只要 `date` 是新的，就会自动浮到前面 —— 这正是想要的行为，不需要每次琢磨填什么数字。
+
+需要强制某篇排前面时，才在 `status.json` 里给它单独写 `weight`（写了就覆盖自动值）。
 
 ### 加一篇新笔记
 

@@ -21,7 +21,6 @@
       "description": "学习 LLM 最核心的技术，始终 follow 时代的前沿，同时 top down 学习对应的基础知识。",
       "date": "2026-09-18",
       "tags": ["llm", "roadmap", "overview", "model-architecture", "infra", "training-recipes", "pre-training", "mid-training", "post-training"],
-      "weight": -100,
       "pin": "intro",
       "toc": true
     },
@@ -32,7 +31,6 @@
       "description": "基座模型架构",
       "date": "2026-09-22",
       "tags": ["model-architecture", "transformer", "attention", "architecture"],
-      "weight": -80,
       "toc": true
     },
     {
@@ -44,7 +42,6 @@
       "description": "LLM Infra 源码解读",
       "date": "2026-09-18",
       "tags": ["infra", "training-system", "inference-system", "codebase"],
-      "weight": -70,
       "toc": true
     },
     {
@@ -55,7 +52,6 @@
       "description": "THUDM slime：连接 Megatron 与 SGLang、为 RL scaling 设计的 LLM post-training 框架。",
       "date": "2026-09-18",
       "tags": ["slime", "rl", "post-training", "megatron", "sglang", "ray"],
-      "weight": 100,
       "toc": true
     },
     {
@@ -65,7 +61,6 @@
       "description": "后训练算法和前沿",
       "date": "2026-10-08",
       "tags": ["post-training", "rl", "sft", "opd", "training-recipes"],
-      "weight": 200,
       "toc": true
     },
     {
@@ -76,7 +71,6 @@
       "description": "从策略梯度到 PPO / GRPO 的 RL 系列",
       "date": "2026-10-10",
       "tags": ["agentic-rl", "rl", "reinforcement-learning", "ppo", "grpo", "post-training", "training-recipes"],
-      "weight": 220,
       "toc": true
     }
   ],
@@ -91,7 +85,6 @@
       "description": "从 MHA、MQA/GQA、MLA 到稀疏注意力（LongFormer / StreamingLLM / NSA / DSA / MSA）、线性注意力（Mamba / Gated DeltaNet）与 Flash Attention。",
       "date": "2026-09-22",
       "tags": ["attention", "mha", "mqa", "gqa", "mla", "kv-cache", "sparse-attention", "linear-attention", "mamba", "flash-attention", "deepseek", "glm", "qwen", "minimax", "transformer"],
-      "weight": 10,
       "toc": true
     },
     {
@@ -103,7 +96,6 @@
       "description": "Pre-Norm / Post-Norm 与 RMSNorm 的推导、激活函数与 SwiGLU FFN，以及 RoPE 的旋转矩阵与长度外推（PI / NTK-aware / YaRN）。",
       "date": "2026-09-22",
       "tags": ["normalization", "layernorm", "rmsnorm", "batchnorm", "ffn", "swiglu", "activation", "rope", "position-encoding", "ntk", "yarn", "length-extrapolation", "transformer"],
-      "weight": 20,
       "toc": true
     },
     {
@@ -115,7 +107,6 @@
       "description": "Prefill 与 Decode 两个阶段的 FLOPs 与 Memory-Bound 分析，以及 Speculative Decoding、Multi-Token Prediction。",
       "date": "2026-09-22",
       "tags": ["decoding", "prefill", "kv-cache", "roofline", "memory-bound", "speculative-decoding", "multi-token-prediction", "inference"],
-      "weight": 30,
       "toc": true
     },
     {
@@ -127,7 +118,6 @@
       "description": "预训练优化器与训练稳定性。",
       "date": "2026-09-22",
       "tags": ["optimizer", "training-stability", "pre-training"],
-      "weight": 40,
       "toc": true,
       "stub": true
     },
@@ -140,7 +130,6 @@
       "description": "MoE 的路由、负载均衡与训练。",
       "date": "2026-09-22",
       "tags": ["moe", "mixture-of-experts", "routing", "load-balancing", "sparse-model"],
-      "weight": 50,
       "toc": true,
       "stub": true
     },
@@ -153,7 +142,6 @@
       "description": "从 train.py 入口出发，梳理 Slime 如何用 Ray 封装 actor，并挂接 Megatron 在 GPU 上完成训练。",
       "date": "2026-09-18",
       "tags": ["slime", "megatron", "ray", "rl", "post-training", "actor", "rollout", "distributed-training"],
-      "weight": 110,
       "toc": true
     },
     {
@@ -165,7 +153,6 @@
       "description": "DeepSeek V4.1 的后训练管线：可执行环境的构建、agentic RL 的两个 scale 维度、DSec 与 MOPD，以及后训练 infra。",
       "date": "2026-10-08",
       "tags": ["post-training", "rl", "agentic-rl", "deepseek", "sft", "opd", "model-merging", "dsec", "mopd", "scaffold", "environment", "tech-report"],
-      "weight": 210,
       "toc": true
     },
     {
@@ -177,7 +164,6 @@
       "description": "从 RL 基础、策略梯度与 reward-to-go，到 REINFORCE、Actor-Critic，以及 PPO 的重要性采样与 clipping。",
       "date": "2026-10-10",
       "tags": ["agentic-rl", "rl", "policy-gradient", "reinforce", "actor-critic", "advantage", "ppo", "importance-sampling", "clipping", "training-recipes"],
-      "weight": 230,
       "toc": true
     },
     {
@@ -189,7 +175,6 @@
       "description": "把 PPO 用到 LLM 上：token level 与 sequence level 的取舍，以及 GRPO。",
       "date": "2026-10-10",
       "tags": ["agentic-rl", "rl", "ppo", "grpo", "llm-training", "post-training", "token-level", "sequence-level", "advantage"],
-      "weight": 240,
       "toc": true
     }
   ],

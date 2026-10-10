@@ -192,6 +192,27 @@ def check_date(value, where: str, report: Report) -> None:
 # 路径推导
 # --------------------------------------------------------------------------
 
+def compute_weights(manifest: dict):
+    """自动生成首页卡片顺序，省掉手工填 weight。
+
+    规则：专题按 status.json 里的书写顺序排在前面（拿到负 weight），
+    文章按 date 从新到旧，同一天保持清单里的书写顺序。
+
+    status.json 里显式写了的 weight 会覆盖自动值，留作强制排序的后门。
+    """
+    sections = manifest.get("sections") or []
+    total = len(sections)
+    sec_weight = {sec.get("id"): -(total - i) for i, sec in enumerate(sections)}
+
+    posts = manifest.get("posts") or []
+    # Python 的排序是稳定的：reverse=True 只反转比较结果，
+    # 同 date 的元素仍保持原始相对顺序。
+    order = sorted(range(len(posts)),
+                   key=lambda i: str(posts[i].get("date") or ""), reverse=True)
+    post_weight = {index: 10 + pos for pos, index in enumerate(order)}
+    return sec_weight, post_weight
+
+
 def section_path(manifest: dict, section_id: str) -> str:
     """把一个 section 的 id 展开成 content/posts 下的相对路径，支持嵌套。"""
     by_id = {s.get("id"): s for s in manifest.get("sections") or []}
@@ -464,6 +485,7 @@ class Output:
 def build_plan(manifest: dict, report: Report):
     outputs = []
     link_map = {}
+    sec_weight, post_weight = compute_weights(manifest)
 
     # 先建链接映射，内部链接重写需要知道每个源文件最终落在哪
     for post in manifest.get("posts") or []:
@@ -490,7 +512,7 @@ def build_plan(manifest: dict, report: Report):
             "date": sec.get("date"),
             "description": sec.get("description"),
             "tags": sec.get("tags"),
-            "weight": sec.get("weight"),
+            "weight": sec.get("weight", sec_weight.get(sec["id"])),
             "pin": sec.get("pin"),
             "toc": sec.get("toc"),
             "draft": sec.get("draft"),
@@ -499,7 +521,7 @@ def build_plan(manifest: dict, report: Report):
         outputs.append(Output(out_dir / "_index.md", text, images))
 
     # 文章
-    for post in manifest.get("posts") or []:
+    for index, post in enumerate(manifest.get("posts") or []):
         src = post["source"]
         sec_path = section_path(manifest, post["section"])
         out_dir = CONTENT / "posts" / sec_path / post["slug"]
@@ -518,7 +540,7 @@ def build_plan(manifest: dict, report: Report):
             "date": post.get("date"),
             "description": post.get("description"),
             "tags": post.get("tags"),
-            "weight": post.get("weight"),
+            "weight": post.get("weight", post_weight.get(index)),
             "pin": post.get("pin"),
             "toc": post.get("toc"),
             "draft": post.get("draft"),
