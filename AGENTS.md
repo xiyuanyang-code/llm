@@ -9,6 +9,7 @@ This repository is a Chinese-language learning notebook for LLM training and arc
 - `infra/` documents training and inference systems. Add a topic directory when a subject needs multiple articles, as with `infra/slime/`.
 - `pre-training/`, `mid-training/`, and `post-training/` are reserved for training-recipe notes.
 - `report/` indexes vendor technical reports and stores locally referenced PDFs. It is intentionally **not** published (the PDFs are gitignored).
+- Course/lecture PDFs live in `slides/` next to the notes that use them and are **gitignored** too (`**/slides/*.pdf`) — they are bulky local reference material and no note links to them.
 - `images/` holds diagrams embedded by Markdown articles.
 - `tools/` holds `sync.py` (the Obsidian → Hugo converter) and `status.json` (the publishing manifest). See `tools/README.md`.
 - `docs/` is the Hugo project root for the published site. See `docs/README.md`.

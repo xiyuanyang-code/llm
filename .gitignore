@@ -1,5 +1,8 @@
 report/*.pdf
 
+# 讲义 / 课程 slides（本地参考资料，体积大且站点不引用，不入库）
+**/slides/*.pdf
+
 # Created by https://www.toptal.com/developers/gitignore/api/macos,python
 # Edit at https://www.toptal.com/developers/gitignore?templates=macos,python
 
