@@ -67,6 +67,17 @@
       "tags": ["post-training", "rl", "sft", "opd", "training-recipes"],
       "weight": 200,
       "toc": true
+    },
+    {
+      "id": "agentic-rl",
+      "slug": "agentic-rl",
+      "parent": "post-training",
+      "title": "Agentic RL",
+      "description": "从策略梯度到 PPO / GRPO 的 RL 系列",
+      "date": "2026-10-10",
+      "tags": ["agentic-rl", "rl", "reinforcement-learning", "ppo", "grpo", "post-training", "training-recipes"],
+      "weight": 220,
+      "toc": true
     }
   ],
 
@@ -155,6 +166,30 @@
       "date": "2026-10-08",
       "tags": ["post-training", "rl", "agentic-rl", "deepseek", "sft", "opd", "model-merging", "dsec", "mopd", "scaffold", "environment", "tech-report"],
       "weight": 210,
+      "toc": true
+    },
+    {
+      "id": "agentic-rl-1",
+      "source": "post-training/agentic rl/Agentic RL Series1 From Policy Gradient to PPO.md",
+      "section": "agentic-rl",
+      "slug": "from-policy-gradient-to-ppo",
+      "title": "Agentic RL 1: From Policy Gradient to PPO",
+      "description": "从 RL 基础、策略梯度与 reward-to-go，到 REINFORCE、Actor-Critic，以及 PPO 的重要性采样与 clipping。",
+      "date": "2026-10-10",
+      "tags": ["agentic-rl", "rl", "policy-gradient", "reinforce", "actor-critic", "advantage", "ppo", "importance-sampling", "clipping", "training-recipes"],
+      "weight": 230,
+      "toc": true
+    },
+    {
+      "id": "agentic-rl-2",
+      "source": "post-training/agentic rl/Agentic RL Series2 RL for LLMs.md",
+      "section": "agentic-rl",
+      "slug": "rl-for-llms",
+      "title": "Agentic RL 2: RL for LLMs",
+      "description": "把 PPO 用到 LLM 上：token level 与 sequence level 的取舍，以及 GRPO。",
+      "date": "2026-10-10",
+      "tags": ["agentic-rl", "rl", "ppo", "grpo", "llm-training", "post-training", "token-level", "sequence-level", "advantage"],
+      "weight": 240,
       "toc": true
     }
   ],
