@@ -88,8 +88,9 @@
 {{- $class = "post-entry tag-entry" }}
 {{- end }}
 
-{{- /* PATCH 3: pin-<name> 由 assets/css/extended/pin-cards.css 提供配色 */}}
-<article class="{{ $class }}{{ with .Params.pin }} pin-{{ . }}{{ end }}">
+{{- /* PATCH 3: pin-<name> 由 assets/css/extended/pin-cards.css 提供配色。
+       is-section 给专题卡片挂「专题」角标；已经 pin 的卡片显示 Pinned，不重复加。 */}}
+<article class="{{ $class }}{{ with .Params.pin }} pin-{{ . }}{{ end }}{{ if and (eq .Kind "section") (not .Params.pin) }} is-section{{ end }}">
   {{- $isHidden := (.Param "cover.hiddenInList") | default (.Param "cover.hidden") | default false }}
   {{- partial "cover.html" (dict "cxt" . "IsSingle" false "isHidden" $isHidden) }}
   <header class="entry-header">
