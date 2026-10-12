@@ -21,9 +21,9 @@
 
 ## PPO for LLMs
 
-### Vanila PPO
+### Vanilla PPO
 
-在 LLM 的场景下，我们首先来看如何把 vanila-ppo 算法迁移到 LLM 建模中去:
+在 LLM 的场景下，我们首先来看如何把 vanilla-ppo 算法迁移到 LLM 建模中去:
 
 LLM 本身的参数作为 Policy $\theta$, 我们只考虑单次 LLM 交互的场景，且**暂时不考虑 Next-Token-Prediction** 的过程，given prompt $x$, 输出 response $y$, 一个基于环境的打分器给出 reward = $R(x, y)$.
 
@@ -45,7 +45,7 @@ $$
 \nabla_\theta J(\theta) = \mathbb{E}_{y\sim\pi_\theta(\cdot\mid x)} \left[ \nabla_\theta\log\pi_\theta(y\mid x) A^{\pi_\theta}(x,y) \right]
 $$
 
-其中: $A^{\pi_\theta}(x,y) =R(x,y)- \mathbb E_{y'\sim\pi_\theta(\cdot\mid x)}[R(x,y')]$， 后者在 Vanila-PPO 中通过一个 Value Network 来进行拟合。
+其中: $A^{\pi_\theta}(x,y) =R(x,y)- \mathbb E_{y'\sim\pi_\theta(\cdot\mid x)}[R(x,y')]$， 后者在 Vanilla-PPO 中通过一个 Value Network 来进行拟合。
 
 ### RLVR-PPO/RLHF-PPO
 
@@ -99,7 +99,7 @@ $$
 
 ### Token Level or Sequence Level?
 
-在上文无论是 Vanila-PPO 还是 RLHF-PPO，都是在 sequence-level 上做的，也就是说，我们假想模型 $\pi_{\theta}$ 给定输入 $x$, 直接输出 $y$，忽略了 Next-Token-Prediction 的方式。在 PPO 中，LLM 的 Auto-Regressive（自回归）特性实际上会带来一个很重要的结果：
+在上文无论是 Vanilla-PPO 还是 RLHF-PPO，都是在 sequence-level 上做的，也就是说，我们假想模型 $\pi_{\theta}$ 给定输入 $x$, 直接输出 $y$，忽略了 Next-Token-Prediction 的方式。在 PPO 中，LLM 的 Auto-Regressive（自回归）特性实际上会带来一个很重要的结果：
 
 > 整个 Response 的 KL Divergence，可以分解成每一个 Token 的 Conditional KL Divergence。
 
@@ -239,9 +239,10 @@ $$
 
 > 这里使用近似号，是因为 GRPO 的组内标准化 Advantage 并非严格无偏的真实 Advantage Estimator。
 
-### Vanila-GRPO
+### Vanilla-GRPO
 
 同样，我们继续加上 PPO-Clip 和 KL 散度约束，形成最终的 GRPO 原始版形式:
+
 $$
 \rho_{i,t}(\theta) = \frac{\pi_\theta(o_{i,t}\mid q,o_{i,<t})} {\pi_{\theta_{\mathrm{old}}}(o_{i,t}\mid q,o_{i,<t})}
 $$
