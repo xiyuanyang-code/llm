@@ -115,6 +115,13 @@ python3 tools/sync.py                              # 只生成，不预览
 > 构建期渲染后每条公式都是独立的 `<span class="katex">`，两个毛病一起消失，也不再需要 CDN 上的 `katex.min.js` / `auto-render.min.js`（只剩一份 `katex.min.css`）。
 > 代价是 HTML 变大（`rl-for-llms` 单页 45KB → 552KB，gzip 后 40KB），换来的是无 JS 也能看公式、公式进搜索索引。
 
+> ⚠️ **`extend_head.html` 里的 `katex.min.css` 版本必须和 Hugo 的公式引擎配套，不能随手降。**
+> Hugo 用的是 Go 版 KaTeX 移植，它输出的类名是 KaTeX **0.18 起**的新命名：`katex-sizing` / `katex-rule` / `katex-accent` / `katex-stretchy`；
+> 0.17 及更早的 CSS 里这几条叫 `sizing` / `rule` / `accent` / `stretchy`。
+> 配错的表现很隐蔽：公式看着"渲染了"，但**下标不缩小**（`.katex-sizing` 匹配不到，只剩 `vlist` 的位移），
+> 于是 `J_{\mathrm{GRPO}} = J_{\mathrm{clip}} - \beta J_{\mathrm{KL}}` 显示成 `JGRPO = Jclip − βJKL`，一堆同字号的字挤在基线上。
+> 换版本时核对一遍：Hugo 输出里的那 4 个 `katex-*` 类，在目标 CSS 里都要有规则。
+
 两个关键实现细节：
 
 - **先切代码块再做任何重写**。`slime-training.md` 的 python 代码块里有 `if self.role == "critic":` 这类 `==` 比较运算符，不先隔离代码块就会被高亮替换改坏。

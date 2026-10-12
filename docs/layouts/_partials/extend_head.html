@@ -3,8 +3,16 @@
 
        公式本身是**构建期**渲染的（docs/layouts/_markup/render-passthrough.html），
        这里只补 katex.min.css —— KaTeX 输出的 HTML 靠这份 CSS 才能显示成公式排版。
-       字体由该 CSS 自己从同一 CDN 拉取，所以不需要 JS，也不做 auto-render。 */ -}}
+       字体由该 CSS 自己从同一 CDN 拉取，所以不需要 JS，也不做 auto-render。
+
+       ⚠️ 版本不能随便降。Hugo 的 transform.ToMath 用的是 Go 版 KaTeX 移植
+       （github.com/benoitkugler/katex），它输出的类名是 KaTeX 0.18 起的新命名：
+       katex-sizing / katex-rule / katex-accent / katex-stretchy。
+       0.17 及更早的 CSS 里这几条规则叫 sizing / rule / accent / stretchy，
+       拿旧 CSS 配新输出，下标会因为 .katex-sizing 匹配不到而不缩小（只剩 vlist 的位移），
+       整条公式看起来就像一堆同字号的字挤在基线上。
+       换版本时请一起核对：Hugo 输出里的 4 个 katex-* 类在目标 CSS 里都存在。 */ -}}
 {{- if or .Params.math .Site.Params.math }}
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.28/dist/katex.min.css"
-  integrity="sha384-Wsr4Nh3yrvMf2KCebJchRJoVo1gTU6kcP05uRSh5NV3sj9+a8IomuJoQzf3sMq4T" crossorigin="anonymous">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.19.0/dist/katex.min.css"
+  integrity="sha384-3rdsX6e5mueWyoweR9NIVmtEsUkokpBT/0ALqKKIBMr9j4qhHkaIkAcGgsE6uVlp" crossorigin="anonymous">
 {{- end }}
