@@ -78,21 +78,29 @@ menu:
     # identifier 会被 PaperMod 拿去跑 site.GetPage（header.html 里判断搜索页），
     # 所以必须是能唯一解析的页面路径，不能是裸名字（如 "model-arch" 会报 ambiguous）。
     - identifier: /posts/model-arch
-      name: Model Architecture
+      name: Model-Arch
       url: /posts/model-arch/
       weight: 10
+    - identifier: /posts/pre-training
+      name: PreTrain
+      url: /posts/pre-training/
+      weight: 20
+    - identifier: /posts/mid-training
+      name: MidTrain
+      url: /posts/mid-training/
+      weight: 30
+    - identifier: /posts/post-training
+      name: PostTrain
+      url: /posts/post-training/
+      weight: 40
     - identifier: /posts/infra
       name: Infra
       url: /posts/infra/
-      weight: 20
-    - identifier: /posts/post-training
-      name: LLM PostTraining
-      url: /posts/post-training/
-      weight: 30
+      weight: 50
     - identifier: /search
       name: Search
       url: /search/
-      weight: 40
+      weight: 60
 
 pygmentsUseClasses: true
 markup:

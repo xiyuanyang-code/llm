@@ -89,8 +89,11 @@
 {{- end }}
 
 {{- /* PATCH 3: pin-<name> 由 assets/css/extended/pin-cards.css 提供配色。
-       is-section 给专题卡片挂「专题」角标；已经 pin 的卡片显示 Pinned，不重复加。 */}}
-<article class="{{ $class }}{{ with .Params.pin }} pin-{{ . }}{{ end }}{{ if and (eq .Kind "section") (not .Params.pin) }} is-section{{ end }}">
+       is-section    一级专题（status.json 里 parent 为空的 section）-> Section 角标
+       is-subsection 二级专题（写了 parent 的）-> Sub-Section 角标，配色不同，免得两级混在一起分不清
+       已经 pin 的卡片显示 Pinned，不重复加。
+       「是否为二级」看 frontmatter 的 sub，由 sync.py 依 parent 写出来。 */}}
+<article class="{{ $class }}{{ with .Params.pin }} pin-{{ . }}{{ end }}{{ if eq .Kind "section" }}{{ if .Params.sub }} is-subsection{{ else }}{{ if not .Params.pin }} is-section{{ end }}{{ end }}{{ end }}">
   {{- $isHidden := (.Param "cover.hiddenInList") | default (.Param "cover.hidden") | default false }}
   {{- partial "cover.html" (dict "cxt" . "IsSingle" false "isHidden" $isHidden) }}
   <header class="entry-header">

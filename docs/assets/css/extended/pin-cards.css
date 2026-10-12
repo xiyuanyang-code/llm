@@ -1,8 +1,9 @@
 /* 卡片角标。
  *
- * 两种角标，样式统一（淡蓝色胶囊）：
- *   pin-intro   -> "Pinned"  only Above All 使用（layouts/list.html 依 frontmatter 的 pin 字段注入）
- *   is-section  -> "专题"     layouts/list.html 依 .Kind == "section" 自动注入
+ * 三种角标，都是淡色胶囊，靠色相区分层级：
+ *   pin-intro    -> "Pinned"      只有 Above All 使用（layouts/list.html 依 frontmatter 的 pin 注入）
+ *   is-section   -> "Section"     一级专题（parent 为空）
+ *   is-subsection-> "Sub-Section" 二级专题（写了 parent），换成灰蓝，和一级区分开
  * 只有 pin 的卡片额外带一条左侧强调边和淡色底，用来区别于普通专题卡。
  *
  * tools/sync.py --check 会校验 status.json 里用到的 pin 名字在这里有对应规则，
@@ -10,15 +11,19 @@
  */
 
 :root {
-  --pin-accent: #3b82f6; /* blue-500，置顶卡片的强调边 */
-  --badge-bg: #dbeafe;   /* blue-100，淡蓝底 */
-  --badge-fg: #1d4ed8;   /* blue-700 */
+  --pin-accent: #3b82f6;      /* blue-500，置顶卡片的强调边 */
+  --badge-bg: #dbeafe;        /* blue-100，一级专题的淡蓝底 */
+  --badge-fg: #1d4ed8;        /* blue-700 */
+  --sub-badge-bg: #e2e8f0;    /* slate-200，二级专题换成灰蓝 */
+  --sub-badge-fg: #475569;    /* slate-600 */
 }
 
 :root[data-theme="dark"] {
-  --pin-accent: #60a5fa; /* blue-400 */
-  --badge-bg: #1e3a8a;   /* blue-900 */
-  --badge-fg: #bfdbfe;   /* blue-200 */
+  --pin-accent: #60a5fa;      /* blue-400 */
+  --badge-bg: #1e3a8a;        /* blue-900 */
+  --badge-fg: #bfdbfe;        /* blue-200 */
+  --sub-badge-bg: #334155;    /* slate-700 */
+  --sub-badge-fg: #cbd5e1;    /* slate-300 */
 }
 
 /* 置顶卡片：左侧强调条 + 淡色底 */
@@ -30,13 +35,15 @@
 
 /* 给标题留出右上角角标的位置，避免文字被盖住 */
 .post-entry.pin-intro .entry-header,
-.post-entry.is-section .entry-header {
-  padding-right: 4rem;
+.post-entry.is-section .entry-header,
+.post-entry.is-subsection .entry-header {
+  padding-right: 6rem;
 }
 
-/* 角标本体（两种共用的外观） */
+/* 角标本体（三种共用的外观） */
 .post-entry.pin-intro::after,
-.post-entry.is-section::after {
+.post-entry.is-section::after,
+.post-entry.is-subsection::after {
   position: absolute;
   top: 12px;
   right: 16px;
@@ -50,8 +57,18 @@
   pointer-events: none; /* 点击穿透到下面的 entry-link */
 }
 
+/* 二级专题换成灰蓝，和一级专题的淡蓝区分开 */
+.post-entry.is-subsection::after {
+  color: var(--sub-badge-fg);
+  background: var(--sub-badge-bg);
+}
+
 .post-entry.pin-intro::after {
   content: "Pinned";
+}
+
+.post-entry.is-subsection::after {
+  content: "Sub-Section";
 }
 
 .post-entry.is-section::after {
