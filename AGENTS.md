@@ -5,9 +5,9 @@
 This repository is a Chinese-language learning notebook for LLM training and architecture. Keep material grouped by topic:
 
 - `README.md` defines the repository scope and high-level study outline. It is also published verbatim as the website home page, so keep it reader-facing prose.
-- `model_arch/` contains architecture notes; the current chapters are `Advanced LLMs 1 (Attentions).md` through `Advanced LLMs 5 (Mixture of Experts).md`.
+- `model_arch/` contains architecture notes; the current chapters are `Advanced LLMs 1 (Attentions).md` through `Advanced LLMs 4 (Mixture of Experts).md`.
 - `infra/` documents training and inference systems. Add a topic directory when a subject needs multiple articles, as with `infra/slime/`.
-- `pre-training/`, `mid-training/`, and `post-training/` are reserved for training-recipe notes.
+- `pre-training/`, `mid-training/`, and `post-training/` hold training-recipe notes, named whatever the topic is (`Optimizers.md`, `Frontier Post Training.md`) rather than by chapter number.
 - `report/` indexes vendor technical reports and stores locally referenced PDFs. It is intentionally **not** published (the PDFs are gitignored).
 - Course/lecture PDFs live in `slides/` next to the notes that use them and are **gitignored** too (`**/slides/*.pdf`) — they are bulky local reference material and no note links to them.
 - `images/` holds diagrams embedded by Markdown articles.

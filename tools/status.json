@@ -55,6 +55,15 @@
       "toc": true
     },
     {
+      "id": "pre-training",
+      "slug": "pre-training",
+      "title": "Pre-Training",
+      "description": "Pretraining data, dynamics and optimizers.",
+      "date": "2026-10-12",
+      "tags": ["pre-training", "training-recipes", "optimizer", "muon"],
+      "toc": true
+    },
+    {
       "id": "post-training",
       "slug": "post-training",
       "title": "Post Training",
@@ -111,10 +120,10 @@
     },
     {
       "id": "optimizers",
-      "source": "model_arch/Advanced LLMs 4 (Optimizers).md",
-      "section": "model-arch",
+      "source": "pre-training/Optimizers.md",
+      "section": "pre-training",
       "slug": "optimizers",
-      "title": "Advanced LLMs 4: Optimizers",
+      "title": "Optimizers",
       "description": "Classical optimizers for LLM pretraining. (SGD, Adam, MUON)",
       "date": "2026-09-22",
       "tags": ["optimizer", "training-stability", "pre-training", "muon"],
@@ -123,10 +132,10 @@
     },
     {
       "id": "mixture-of-experts",
-      "source": "model_arch/Advanced LLMs 5 (Mixture of Experts).md",
+      "source": "model_arch/Advanced LLMs 4 (Mixture of Experts).md",
       "section": "model-arch",
       "slug": "mixture-of-experts",
-      "title": "Advanced LLMs 5: Mixture of Experts",
+      "title": "Advanced LLMs 4: Mixture of Experts",
       "description": "MoE: Routing, balancing and training.",
       "date": "2026-09-22",
       "tags": ["moe", "mixture-of-experts", "routing", "load-balancing", "sparse-model"],
