@@ -21,8 +21,6 @@ params:
   env: production # to enable google analytics, opengraph, twitter-cards and schema.
   title: LLM Notes
   math: true # KaTeX, loaded by layouts/_partials/extend_head.html
-  description: "LLM 架构、训练与推理的中文学习笔记：Attention 变体、Normalization、RoPE、解码与训练系统。"
-  keywords: [llm, attention, transformer, rope, mla, moe, infra]
   author: ["Xiyuan Yang"]
   DateFormat: "2006-01-02"
   defaultTheme: auto # dark, light
@@ -50,13 +48,14 @@ params:
   # home-info 模式：首页顶部的介绍卡片
   homeInfoParams:
     Title: "LLM Notes \U0001F44B"
-    Content: "Full Stack Advanced LLM Notes, always updating."
+    Content: "Advanced LLM Notes (Model-Arch, Infra, Data, Pre/Mid/Post-Training), always updating."
 
   socialIcons:
     - name: github
       url: "https://github.com/xiyuanyang-code/llm"
     - name: web
       url: "https://xiyuanyang-code.github.io/llm/"
+    # todo 加一个作者 url https://xiyuanyang-code.github.io/cv/
 
   # 搜索基于 index.json，需要 outputs.home 里包含 JSON
   fuseOpts:
@@ -81,10 +80,14 @@ menu:
       name: Infra
       url: /posts/infra/
       weight: 20
+    - identifier: /posts/post-training
+      name: LLM PostTraining
+      url: /posts/post-training/
+      weight: 30
     - identifier: /search
       name: Search
       url: /search/
-      weight: 30
+      weight: 40
 
 pygmentsUseClasses: true
 markup:
