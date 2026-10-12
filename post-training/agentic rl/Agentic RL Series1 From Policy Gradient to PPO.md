@@ -325,3 +325,26 @@ $$
 \hat A_t^{\mathrm{GAE}} = \sum_{l=0}^{T-t-1} (\gamma\lambda)^l\delta_{t+l}
 $$
 
+### Off-Policy or On-Policy?
+
+我们具体梳理在工程实现中，PPO 的实现方式是什么:
+
+- Iteration $X$:
+	- **==Rollout==**: 使用 Policy $\theta_0$ 进行 rollout (运行 rollout batch sizes 次)
+	- **==PPO Update==**: for Epoch $s$:
+		- 对于每一个 mini-batch 聚合轨迹数据，计算梯度，进行梯度下降
+		- $\theta_0$ -> $\theta_{0,1}$ -> $\theta_{0,2}$ -> ...
+		- 注意，哪怕后续发生了多次偏移，在单个 iteration 中，所有的数据都使用 $\theta_0$ 的数据进行更新，通过 IS 进行采样修复
+	- 最终，得到新的 Policy $\theta_1$
+- Iteration $X+1$: ...
+	- 使用 $\theta_1$ 进行轨迹数据 rollout（不再使用上一个 iteration 中的数据）
+
+假设我们规定超参数:
+- Rollout Batch Size = 1024 Responses
+- Training Mini-batch Size = 256 Responses
+- PPO Epoch = 4
+
+则在单个 epoch 中 minibatches 的数量是: 1024/256 = 4, 因此在一个 iterations 内，需要做 16 次 gradient descent ($\texttt{epoch\_num} \times \texttt{mini\_batch\_size}$). 也就是说，可能在一个 iteration 中会有 16 个 policy checkpoint! 但是这些都使用相同的数据计算，只不过被赋予了不同的重要性采样。
+
+因此，PPO 本质上是一种 On-Policy 的算法，但是为了提升数据复用利用效率，允许一部分数据的 Off-Policy 复用。
+

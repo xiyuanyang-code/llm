@@ -176,6 +176,18 @@
       "date": "2026-10-10",
       "tags": ["agentic-rl", "rl", "ppo", "grpo", "llm-training", "post-training", "token-level", "sequence-level", "advantage"],
       "toc": true
+    },
+    {
+      "id": "agentic-rl-3",
+      "source": "post-training/agentic rl/Agentic RL Series3 From tokens to Trajectories, Long-Horizon Reinforcement Learning.md",
+      "section": "agentic-rl",
+      "slug": "from-tokens-to-trajectories",
+      "title": "Agentic RL 3: From Tokens to Trajectories, Long-Horizon Reinforcement Learning",
+      "description": "从 token 级到轨迹级：长程（long-horizon）强化学习。",
+      "date": "2026-10-10",
+      "tags": ["agentic-rl", "rl", "long-horizon", "trajectory", "llm-training", "post-training"],
+      "toc": true,
+      "stub": true
     }
   ],
 
