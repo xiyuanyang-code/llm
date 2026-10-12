@@ -55,7 +55,7 @@
 }
 
 .post-entry.is-section::after {
-  content: "专题";
+  content: "Section";
 }
 
 /* 转换器在图片缺失位置插入的占位 */
