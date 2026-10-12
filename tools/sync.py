@@ -170,7 +170,8 @@ def validate_manifest(manifest: dict, report: Report) -> None:
 
 def check_date(value, where: str, report: Report) -> None:
     if not value:
-        report.error(f"{where} 缺少 date（笔记没有 git 历史时无法从别处推断，必须显式给出）")
+        # 不写也行：日期默认取笔记文件的「最后编辑时间」（见 resolve_edit_times）。
+        # 清单里的 date 只是「文件不在 / git 拿不到时间」时的兜底。
         return
     if not DATE_RE.match(str(value)):
         report.error(f"{where} 的 date 必须是 YYYY-MM-DD，当前 {value!r}")
@@ -192,24 +193,181 @@ def check_date(value, where: str, report: Report) -> None:
 # 路径推导
 # --------------------------------------------------------------------------
 
-def compute_weights(manifest: dict):
+def _git(*args: str) -> str:
+    """跑一条 git 命令，拿不到结果就返回空串（没有 git、浅克隆等）。"""
+    try:
+        proc = subprocess.run(("git",) + args, cwd=str(REPO),
+                              stdout=subprocess.PIPE, stderr=subprocess.DEVNULL,
+                              universal_newlines=True)
+    except OSError:
+        return ""
+    return proc.stdout.strip() if proc.returncode == 0 else ""
+
+
+_CONTENT_STAMPS = None
+
+
+def _content_stamps() -> dict:
+    """路径 -> 「内容最后一次改动」的提交时间戳。改名/挪目录不算改动。
+
+    一次 `git log --name-status -M` 把全仓库历史拉下来（不带 pathspec！带了的话
+    git 只看得到半个改名，会把 R100 误判成 A），然后：
+
+      - 纯改名（R100）把新旧路径并成同一条链，新路径沿用旧路径的历史；
+      - A / M、以及改名同时改了内容（R0xx）的，记下这次提交时间；
+      - 每条链取最新的那个时间。
+
+    这样「把笔记挪个目录」不会让它假装刚编辑过；改名 + 同时改内容仍然算一次编辑。
+    """
+    global _CONTENT_STAMPS
+    if _CONTENT_STAMPS is not None:
+        return _CONTENT_STAMPS
+
+    raw = _git("log", "--name-status", "-M", "--format=%ct")
+    lineage: dict = {}
+    renames, changes = [], []
+    stamp = None
+    for line in raw.splitlines():
+        if not line:
+            continue
+        if line.isdigit():
+            stamp = float(line)
+            continue
+        parts = line.split("\t")
+        status, paths = parts[0], parts[1:]
+        if len(paths) == 2 and status.startswith("R"):
+            if status == "R100":
+                renames.append((paths[0], paths[1]))
+            else:
+                changes.append((paths[1], stamp))
+        elif len(paths) == 1 and status in ("A", "M"):
+            changes.append((paths[0], stamp))
+
+    def find(path: str) -> str:
+        lineage.setdefault(path, path)
+        while lineage[path] != path:
+            lineage[path] = lineage[lineage[path]]
+            path = lineage[path]
+        return path
+
+    for old, new in renames:
+        lineage[find(new)] = find(old)
+
+    newest: dict = {}
+    for path, when in changes:
+        root = find(path)
+        if when > newest.get(root, 0):
+            newest[root] = when
+
+    _CONTENT_STAMPS = {path: newest.get(find(path)) for path in lineage}
+    return _CONTENT_STAMPS
+
+
+def source_edit_time(rel_path, fallback=None):
+    """一条笔记的「最后编辑时间」，返回 (时间戳, 'YYYY-MM-DD')。
+
+    取值优先级：
+      1. 工作区里还有未提交的改动（含刚新建、还没 add 的文件）-> 文件 mtime。
+         本地刚写完还没提交时，预览里它立刻排到前面。
+      2. 否则 -> git 里内容最后一次改动的提交时间（见 _content_stamps）。
+      3. git 查不到（浅克隆、不是 git 仓库、文件还没入库）-> 文件 mtime。
+      4. 文件本身就不在 -> 清单里写的 date。
+
+    为什么不直接用 mtime：CI 每次都是全新检出，所有文件 mtime 都是检出时间，
+    按 mtime 排会退化成随机顺序；提交时间在克隆之后仍然是稳定的。
+    （代价是 CI 必须拿全历史：workflow 里 checkout 的 fetch-depth 得是 0。）
+    """
+    path = (REPO / rel_path) if rel_path else None
+    if path is None or not path.exists():
+        return (None, fallback)
+
+    if _git("status", "--porcelain", "--", rel_path):
+        stamp = path.stat().st_mtime           # 有未提交改动：以工作区为准
+    else:
+        stamp = _content_stamps().get(rel_path) or path.stat().st_mtime
+    return (stamp, _dt.datetime.fromtimestamp(stamp).strftime("%Y-%m-%d"))
+
+
+def resolve_edit_times(manifest: dict):
+    """算出每个 section / post 的「最后编辑时间」。
+
+    专题自己可能没有对应文件（没写 index_source），那就取它下面所有文章、以及
+    子专题里最新的那个时间 —— 专题卡片上的日期因此表示「这个专题最近有更新」。
+    """
+    posts = manifest.get("posts") or []
+    post_time = [source_edit_time(p.get("source"), p.get("date")) for p in posts]
+
+    sections = manifest.get("sections") or []
+    by_id = {sec.get("id"): sec for sec in sections}
+    collected = {sec.get("id"): [] for sec in sections}
+    for sec in sections:
+        if sec.get("index_source"):
+            stamp = source_edit_time(sec["index_source"])
+            if stamp[0] is not None:
+                collected[sec["id"]].append(stamp)
+    for index, post in enumerate(posts):
+        bucket = collected.get(post.get("section"))
+        if bucket is not None and post_time[index][0] is not None:
+            bucket.append(post_time[index])
+
+    def depth(sec) -> int:
+        seen, cur, d = set(), sec, 0
+        while cur and cur.get("parent") and cur["parent"] not in seen:
+            seen.add(cur["parent"])
+            cur = by_id.get(cur["parent"])
+            d += 1
+        return d
+
+    # 由深到浅：子专题的时间先并进父专题，父专题再往上并
+    for sec in sorted(sections, key=depth, reverse=True):
+        parent = sec.get("parent")
+        if parent in collected:
+            collected[parent].extend(collected[sec["id"]])
+
+    sec_time = {}
+    for sec in sections:
+        bucket = collected[sec["id"]]
+        if bucket:
+            sec_time[sec["id"]] = max(bucket, key=lambda item: item[0])
+        else:
+            fallback = sec.get("date")
+            stamp = None
+            if fallback:
+                stamp = _dt.datetime.strptime(fallback, "%Y-%m-%d").timestamp()
+            sec_time[sec["id"]] = (stamp, fallback)
+    return sec_time, post_time
+
+
+def compute_weights(manifest: dict, sec_time: dict, post_time: list):
     """自动生成首页卡片顺序，省掉手工填 weight。
 
-    规则：专题按 status.json 里的书写顺序排在前面（拿到负 weight），
-    文章按 date 从新到旧，同一天保持清单里的书写顺序。
+    顺序规则，三组依次排下来：
+      1. 顶层专题 —— 按 status.json 里 sections 数组的书写顺序（想换大板块次序就调整数组）；
+      2. 二级专题 —— 排在顶层专题之后，彼此按编辑时间新 -> 旧；
+      3. 文章     —— 排在所有专题之后，按编辑时间新 -> 旧。
+    同时间的保持清单里的书写顺序。卡片上显示的日期同样来自编辑时间，
+    所以「排序」和「日期」永远是一致的。
 
-    status.json 里显式写了的 weight 会覆盖自动值，留作强制排序的后门。
+    status.json 里显式写了的 weight 仍然覆盖自动值，留作强制排序的后门。
     """
     sections = manifest.get("sections") or []
-    total = len(sections)
-    sec_weight = {sec.get("id"): -(total - i) for i, sec in enumerate(sections)}
-
     posts = manifest.get("posts") or []
-    # Python 的排序是稳定的：reverse=True 只反转比较结果，
-    # 同 date 的元素仍保持原始相对顺序。
-    order = sorted(range(len(posts)),
-                   key=lambda i: str(posts[i].get("date") or ""), reverse=True)
-    post_weight = {index: 10 + pos for pos, index in enumerate(order)}
+    position = {sec.get("id"): i for i, sec in enumerate(sections)}
+
+    def newer_first(seq_index: int, stamp):
+        return (-(stamp or 0), seq_index)
+
+    top = [sec for sec in sections if not sec.get("parent")]
+    sub = [sec for sec in sections if sec.get("parent")]
+    sub.sort(key=lambda sec: newer_first(position[sec["id"]], sec_time[sec["id"]][0]))
+
+    ordered = top + sub
+    total = len(ordered)
+    sec_weight = {sec["id"]: -(total - i) for i, sec in enumerate(ordered)}
+
+    ranked = sorted(range(len(posts)),
+                    key=lambda i: newer_first(i, post_time[i][0]))
+    post_weight = {index: 10 + pos for pos, index in enumerate(ranked)}
     return sec_weight, post_weight
 
 
@@ -485,7 +643,8 @@ class Output:
 def build_plan(manifest: dict, report: Report):
     outputs = []
     link_map = {}
-    sec_weight, post_weight = compute_weights(manifest)
+    sec_time, post_time = resolve_edit_times(manifest)
+    sec_weight, post_weight = compute_weights(manifest, sec_time, post_time)
 
     # 先建链接映射，内部链接重写需要知道每个源文件最终落在哪
     for post in manifest.get("posts") or []:
@@ -509,7 +668,7 @@ def build_plan(manifest: dict, report: Report):
             images = []
         fields = {
             "title": sec.get("title"),
-            "date": sec.get("date"),
+            "date": sec_time[sec["id"]][1],
             "description": sec.get("description"),
             "tags": sec.get("tags"),
             "weight": sec.get("weight", sec_weight.get(sec["id"])),
@@ -537,7 +696,7 @@ def build_plan(manifest: dict, report: Report):
             report.note(f"{src} 标记了 stub 但已有内容，可以把 status.json 里的 stub 去掉")
         fields = {
             "title": post.get("title"),
-            "date": post.get("date"),
+            "date": post_time[index][1],
             "description": post.get("description"),
             "tags": post.get("tags"),
             "weight": post.get("weight", post_weight.get(index)),
@@ -680,6 +839,14 @@ def main(argv=None) -> int:
     manifest = load_manifest(report)
     if manifest:
         validate_manifest(manifest, report)
+
+    # 首页顺序取的是 git 里「内容最后改动」的提交时间（见 _content_stamps），
+    # 浅克隆只有最新一次提交，所有笔记都会退化成按文件 mtime 排 —— 结果就是乱序。
+    if _git("rev-parse", "--is-shallow-repository") == "true":
+        report.warn(
+            "当前是浅克隆（shallow clone），拿不到完整提交历史，"
+            "首页排序会退化成按文件 mtime；请把 checkout 的 fetch-depth 设为 0"
+        )
 
     outputs = []
     if manifest and not report.errors:

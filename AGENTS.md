@@ -31,7 +31,7 @@ Pushing to `main` re-runs the converter in CI (`.github/workflows/gh-pages.yaml`
 
 Before committing, confirm that:
 
-- the note you added is listed in `tools/status.json` with an explicit `date` (most notes have no git history to infer one from) and an ASCII `slug`;
+- the note you added is listed in `tools/status.json` with an ASCII `slug` and a `section` (a `date` is optional — the card date and home-page position come from the note's last edit time, see `tools/README.md`);
 - `python3 tools/sync.py --check` is clean;
 - relative links resolve from the article that contains them;
 - image embeds such as `![[sparse_attn.png]]` point at a file that exists in `images/`;

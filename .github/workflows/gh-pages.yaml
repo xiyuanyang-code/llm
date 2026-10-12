@@ -39,7 +39,10 @@ jobs:
           # PaperMod 主题以子模块形式挂在 docs/themes/PaperMod，用固定的 commit，
           # 不做 `submodule update --remote`，否则主题会在部署途中被静默升级。
           submodules: recursive
-          fetch-depth: 1
+          # 必须是全历史：sync.py 用 git 里「内容最后一次改动」的提交时间给首页排序
+          # （见 tools/sync.py 的 _content_stamps）。浅克隆只剩最新一次提交，
+          # 所有笔记会退化成按文件 mtime 排，顺序就乱了 —— 脚本会为此打警告。
+          fetch-depth: 0
 
       - name: Setup Python
         uses: actions/setup-python@v5

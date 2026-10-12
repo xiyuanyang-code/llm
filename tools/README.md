@@ -53,7 +53,7 @@ python3 tools/sync.py                              # 只生成，不预览
 | `parent` | | 父 section 的 `id`，用于嵌套（本项目里 `slime` 的 parent 是 `infra`） |
 | `index_source` | | 用作专题落地页正文的笔记；不填则生成一段占位说明 |
 | `title` / `description` | ✅ | 卡片标题与摘要 |
-| `date` | ✅ | `YYYY-MM-DD` |
+| `date` | | `YYYY-MM-DD`，**通常不用写**：日期默认取笔记的编辑时间，这里只是兜底 |
 | `tags` | | 会生成 `/tags/<tag>/` 页 |
 | `pin` | | 置顶配色名，取值必须是 `docs/assets/css/extended/pin-cards.css` 里定义过的 |
 | `toc` | | 是否显示目录 |
@@ -65,27 +65,47 @@ python3 tools/sync.py                              # 只生成，不预览
 | `source` | ✅ | 相对仓库根的笔记路径 |
 | `section` | ✅ | 所属 section 的 `id` |
 | `slug` | ✅ | URL 段，小写 ASCII kebab-case |
-| `title` / `description` / `date` | ✅ | 卡片与页面元信息 |
+| `title` / `description` | ✅ | 卡片与页面元信息 |
+| `date` | | `YYYY-MM-DD`，同上，通常不用写 |
 | `tags` | | 会生成 `/tags/<tag>/` 页 |
 | `weight` | | **通常不用填**，首页顺序由 `sync.py` 自动生成；写了则覆盖自动值，用于强制排序 |
 | `stub` | | `true` 时，源文件为空则生成「🚧 撰写中」占位正文 |
 | `demoteH1` | | 默认 `true`，把正文里的一级标题降为二级（避免与页面标题打架） |
 
-### 首页顺序（不用手填 weight）
+### 首页顺序与卡片日期（都不用手维护）
 
-首页卡片顺序由 `sync.py` 的 `compute_weights()` 自动生成，规则两条：
+首页卡片的**顺序**和卡片上显示的**日期**由 `sync.py` 一起算出来（`resolve_edit_times()` + `compute_weights()`），顺序规则三组依次排下来：
 
-1. **专题**永远排在文章前面，彼此之间按 `status.json` 里 `sections` 数组的书写顺序 —— 想调整专题顺序就调整数组顺序。
-2. **文章**按 `date` 从新到旧；**同一天**的保持 `posts` 数组里的书写顺序（所以一个系列的多篇按清单顺序读下来）。
+1. **顶层专题** —— 按 `status.json` 里 `sections` 数组的书写顺序。想换大板块次序就调数组，例如现在是 `Above All → Model Architecture → Pre/Mid/Post-Training → LLM Infra`。
+2. **二级专题**（`parent` 指向别人的）—— 排在顶层专题之后，彼此按编辑时间新 → 旧。
+3. **文章** —— 排在所有专题之后，按编辑时间新 → 旧。
 
-也就是说，新写的笔记只要 `date` 是新的，就会自动浮到前面 —— 这正是想要的行为，不需要每次琢磨填什么数字。
+同一时间的，保持清单里的书写顺序（所以一个系列的多篇仍按清单顺序读下来）。
+
+**「编辑时间」怎么来的**（`source_edit_time()`）：
+
+| 情况 | 取什么 |
+| --- | --- |
+| 工作区还有未提交改动（含刚新建、还没 `git add` 的文件） | 文件 mtime —— 本地刚写完就能立刻浮到前面 |
+| 已提交、工作区干净 | git 里**内容最后一次改动**的提交时间 |
+| git 拿不到（浅克隆、不是 git 仓库） | 文件 mtime |
+| 文件本身就不在 | 清单里的 `date` |
+
+两条容易踩的坑，都在代码里处理掉了：
+
+- **不能直接用 mtime 排序**。CI 每次都是全新检出，所有文件的 mtime 都是检出那一刻，按 mtime 排会退化成随机顺序。提交时间在克隆之后仍然稳定。
+- **改名/挪目录不算「编辑」**。`_content_stamps()` 用一次带 `-M` 的 `git log --name-status` 把改名链串起来（新路径继承旧路径的历史），只有 R100（纯改名）会被跳过；改名同时改了内容仍然算一次编辑。所以把 `Advanced LLMs 5 (MoE).md` 挪成 `Advanced LLMs 4 (MoE).md` 不会让这张卡片假装今天刚更新过。
+
+代价：**CI 必须检出全历史**（workflow 里 `fetch-depth: 0`）。浅克隆会被 `sync.py` 检出并打警告。
+
+`status.json` 里的 `date` 现在只是「文件不在 / git 拿不到时间」时的兜底，**可以不写**（`--check` 不再把它当必填）；卡片日期一律以笔记的编辑时间为准。
 
 需要强制某篇排前面时，才在 `status.json` 里给它单独写 `weight`（写了就覆盖自动值）。
 
 ### 加一篇新笔记
 
-1. 在 `model_arch/`、`infra/` 等目录里写好 `.md`。
-2. 在 `status.json` 的 `posts` 里加一条：`source` 指路径、`slug` 定 URL、`date` 必须显式给（这些笔记大多没有 git 历史，无法从别处推断）。
+1. 在 `model_arch/`、`infra/`、`mid-training/` 等目录里写好 `.md`。
+2. 在 `status.json` 的 `posts` 里加一条：`source` 指路径、`slug` 定 URL、指定 `section`（没有对应专题就先在 `sections` 里加一个）。`date` 可以不写 —— 卡片日期和首页位置都用笔记的编辑时间。
 3. `python3 tools/sync.py`。忘了加会被警告提示。
 
 ## 转换规则
