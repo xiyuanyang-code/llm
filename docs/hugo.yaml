@@ -1,6 +1,6 @@
 baseURL: "https://xiyuanyang-code.github.io/llm/"
 locale: "zh-cn"
-title: LLM Notes
+title: Frontier LLM Notes
 theme: PaperMod
 
 enableRobotsTXT: true
@@ -24,7 +24,7 @@ minify:
 
 params:
   env: production # to enable google analytics, opengraph, twitter-cards and schema.
-  title: LLM Notes
+  title: Frontier LLM Notes
   math: true # KaTeX, loaded by layouts/_partials/extend_head.html
   author: ["Xiyuan Yang"]
   DateFormat: "2006-01-02"
@@ -52,7 +52,7 @@ params:
 
   # home-info 模式：首页顶部的介绍卡片
   homeInfoParams:
-    Title: "LLM Notes \U0001F44B"
+    Title: "Frontier LLM Notes \U0001F44B"
     Content: "Advanced LLM Notes (Model-Arch, Infra, Data, Pre/Mid/Post-Training), always updating."
 
   socialIcons:

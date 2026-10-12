@@ -1,17 +1,20 @@
 {
   "schemaVersion": 1,
-
   "site": {
-    "title": "LLM Notes",
+    "title": "Frontier LLM Notes",
     "baseURL": "https://xiyuanyang-code.github.io/llm/",
     "description": "Advanced LLM Notes on model architecture, infra, and pre/mid/post-training recipes, always updating.",
     "author": "Xiyuan Yang"
   },
-
-  "scanRoots": ["model_arch", "infra", "pre-training", "mid-training", "post-training"],
+  "scanRoots": [
+    "model_arch",
+    "infra",
+    "pre-training",
+    "mid-training",
+    "post-training"
+  ],
   "assetRoot": "images",
   "missingImagePolicy": "placeholder",
-
   "sections": [
     {
       "id": "above-all",
@@ -20,7 +23,18 @@
       "title": "Above All",
       "description": "Advanced LLM Notes (Model-Arch, Infra, Data, Pre/Mid/Post-Training), always updating.",
       "date": "2026-09-18",
-      "tags": ["llm", "roadmap", "overview", "model-architecture", "infra", "training-recipes", "pre-training", "mid-training", "post-training", "data"],
+      "tags": [
+        "llm",
+        "roadmap",
+        "overview",
+        "model-architecture",
+        "infra",
+        "training-recipes",
+        "pre-training",
+        "mid-training",
+        "post-training",
+        "data"
+      ],
       "pin": "intro",
       "toc": true
     },
@@ -30,7 +44,56 @@
       "title": "Model Architecture",
       "description": "Base Model Architecture",
       "date": "2026-09-22",
-      "tags": ["model-architecture", "transformer", "attention", "architecture"],
+      "tags": [
+        "model-architecture",
+        "transformer",
+        "attention",
+        "architecture"
+      ],
+      "toc": true
+    },
+    {
+      "id": "pre-training",
+      "slug": "pre-training",
+      "title": "Pre-Training",
+      "description": "Pretraining data, dynamics and optimizers.",
+      "date": "2026-10-12",
+      "tags": [
+        "pre-training",
+        "training-recipes",
+        "optimizer",
+        "muon"
+      ],
+      "toc": true
+    },
+    {
+      "id": "mid-training",
+      "slug": "mid-training",
+      "title": "Mid-Training",
+      "description": "Mid-training: papers and tech reports. (Continual pretraining, data recipe, retention)",
+      "date": "2026-10-12",
+      "tags": [
+        "mid-training",
+        "training-recipes",
+        "continual-pretraining",
+        "data",
+        "tech-report"
+      ],
+      "toc": true
+    },
+    {
+      "id": "post-training",
+      "slug": "post-training",
+      "title": "Post Training",
+      "description": "Frontier LLM post-training: data mixture & post-training algorithms.",
+      "date": "2026-10-08",
+      "tags": [
+        "post-training",
+        "rl",
+        "sft",
+        "opd",
+        "training-recipes"
+      ],
       "toc": true
     },
     {
@@ -41,7 +104,12 @@
       "title": "LLM Infra",
       "description": "LLM Codebase & Infra",
       "date": "2026-09-18",
-      "tags": ["infra", "training-system", "inference-system", "codebase"],
+      "tags": [
+        "infra",
+        "training-system",
+        "inference-system",
+        "codebase"
+      ],
       "toc": true
     },
     {
@@ -51,25 +119,14 @@
       "title": "Slime 101",
       "description": "THUDM Slime infra: bridging Megatron and SGLang for RL-scaling LLM post-training.",
       "date": "2026-09-18",
-      "tags": ["slime", "rl", "post-training", "megatron", "sglang", "ray"],
-      "toc": true
-    },
-    {
-      "id": "pre-training",
-      "slug": "pre-training",
-      "title": "Pre-Training",
-      "description": "Pretraining data, dynamics and optimizers.",
-      "date": "2026-10-12",
-      "tags": ["pre-training", "training-recipes", "optimizer", "muon"],
-      "toc": true
-    },
-    {
-      "id": "post-training",
-      "slug": "post-training",
-      "title": "Post Training",
-      "description": "Frontier LLM post-training: data mixture & post-training algorithms.",
-      "date": "2026-10-08",
-      "tags": ["post-training", "rl", "sft", "opd", "training-recipes"],
+      "tags": [
+        "slime",
+        "rl",
+        "post-training",
+        "megatron",
+        "sglang",
+        "ray"
+      ],
       "toc": true
     },
     {
@@ -79,11 +136,18 @@
       "title": "Agentic RL",
       "description": "From PPO, GRPO to frontier agentic reinforcement learning",
       "date": "2026-10-10",
-      "tags": ["agentic-rl", "rl", "reinforcement-learning", "ppo", "grpo", "post-training", "training-recipes"],
+      "tags": [
+        "agentic-rl",
+        "rl",
+        "reinforcement-learning",
+        "ppo",
+        "grpo",
+        "post-training",
+        "training-recipes"
+      ],
       "toc": true
     }
   ],
-
   "posts": [
     {
       "id": "attentions",
@@ -93,7 +157,23 @@
       "title": "Advanced LLMs 1: Attentions",
       "description": "Frontier LLM's Attention (MQA, GQA, MLA, Linear Attention Family, Flash Attention Family, Sparse Attention Family, Advanced Attentions)",
       "date": "2026-09-22",
-      "tags": ["attention", "mha", "mqa", "gqa", "mla", "kv-cache", "sparse-attention", "linear-attention", "mamba", "flash-attention", "deepseek", "glm", "qwen", "minimax", "transformer"],
+      "tags": [
+        "attention",
+        "mha",
+        "mqa",
+        "gqa",
+        "mla",
+        "kv-cache",
+        "sparse-attention",
+        "linear-attention",
+        "mamba",
+        "flash-attention",
+        "deepseek",
+        "glm",
+        "qwen",
+        "minimax",
+        "transformer"
+      ],
       "toc": true
     },
     {
@@ -104,7 +184,21 @@
       "title": "Advanced LLMs 2: Normalizations, FFNs & RoPE",
       "description": "Pre-Norm / Post-Norm; RMSNorm; Activation function(SwiGLU FFN), Rope rotation and length-extrapolation (PI / NTK-aware / YaRN).",
       "date": "2026-09-22",
-      "tags": ["normalization", "layernorm", "rmsnorm", "batchnorm", "ffn", "swiglu", "activation", "rope", "position-encoding", "ntk", "yarn", "length-extrapolation", "transformer"],
+      "tags": [
+        "normalization",
+        "layernorm",
+        "rmsnorm",
+        "batchnorm",
+        "ffn",
+        "swiglu",
+        "activation",
+        "rope",
+        "position-encoding",
+        "ntk",
+        "yarn",
+        "length-extrapolation",
+        "transformer"
+      ],
       "toc": true
     },
     {
@@ -115,7 +209,16 @@
       "title": "Advanced LLMs 3: FLOPs and Decoding",
       "description": "FLOPs Analysis, Speculative Decoding, Multi-Token Prediction.",
       "date": "2026-09-22",
-      "tags": ["decoding", "prefill", "kv-cache", "roofline", "memory-bound", "speculative-decoding", "multi-token-prediction", "inference"],
+      "tags": [
+        "decoding",
+        "prefill",
+        "kv-cache",
+        "roofline",
+        "memory-bound",
+        "speculative-decoding",
+        "multi-token-prediction",
+        "inference"
+      ],
       "toc": true
     },
     {
@@ -126,7 +229,12 @@
       "title": "Optimizers",
       "description": "Classical optimizers for LLM pretraining. (SGD, Adam, MUON)",
       "date": "2026-09-22",
-      "tags": ["optimizer", "training-stability", "pre-training", "muon"],
+      "tags": [
+        "optimizer",
+        "training-stability",
+        "pre-training",
+        "muon"
+      ],
       "toc": true,
       "stub": true
     },
@@ -138,7 +246,13 @@
       "title": "Advanced LLMs 4: Mixture of Experts",
       "description": "MoE: Routing, balancing and training.",
       "date": "2026-09-22",
-      "tags": ["moe", "mixture-of-experts", "routing", "load-balancing", "sparse-model"],
+      "tags": [
+        "moe",
+        "mixture-of-experts",
+        "routing",
+        "load-balancing",
+        "sparse-model"
+      ],
       "toc": true,
       "stub": true
     },
@@ -150,7 +264,16 @@
       "title": "Slime101: Slime Core Training Pipeline",
       "description": "Core Slime training pipeline analysis. (Ray, Megatron, SGLang)",
       "date": "2026-09-18",
-      "tags": ["slime", "megatron", "ray", "rl", "post-training", "actor", "rollout", "distributed-training"],
+      "tags": [
+        "slime",
+        "megatron",
+        "ray",
+        "rl",
+        "post-training",
+        "actor",
+        "rollout",
+        "distributed-training"
+      ],
       "toc": true
     },
     {
@@ -161,7 +284,20 @@
       "title": "Frontier Post Training Pipelines",
       "description": "Post-training analysis & summaries from frontier base model tech reports (continuously updated).",
       "date": "2026-10-08",
-      "tags": ["post-training", "rl", "agentic-rl", "deepseek", "sft", "opd", "model-merging", "dsec", "mopd", "scaffold", "environment", "tech-report"],
+      "tags": [
+        "post-training",
+        "rl",
+        "agentic-rl",
+        "deepseek",
+        "sft",
+        "opd",
+        "model-merging",
+        "dsec",
+        "mopd",
+        "scaffold",
+        "environment",
+        "tech-report"
+      ],
       "toc": true
     },
     {
@@ -172,7 +308,18 @@
       "title": "Agentic RL 1: From Policy Gradient to PPO",
       "description": "From RL Basis to Policy Gradient (reward-to-go, advantage estimations), REINFORCE, Actor-Critic, PPO (Importance Sampling and Clipping)",
       "date": "2026-10-10",
-      "tags": ["agentic-rl", "rl", "policy-gradient", "reinforce", "actor-critic", "advantage", "ppo", "importance-sampling", "clipping", "training-recipes"],
+      "tags": [
+        "agentic-rl",
+        "rl",
+        "policy-gradient",
+        "reinforce",
+        "actor-critic",
+        "advantage",
+        "ppo",
+        "importance-sampling",
+        "clipping",
+        "training-recipes"
+      ],
       "toc": true
     },
     {
@@ -183,7 +330,17 @@
       "title": "Agentic RL 2: RL for LLMs",
       "description": "RL Methods for LLM PostTraining (vanilla-ppo, RLHF-PPO, DPO, RLVR, DeepSeek-Math-GRPO)",
       "date": "2026-10-10",
-      "tags": ["agentic-rl", "rl", "ppo", "grpo", "llm-training", "post-training", "token-level", "sequence-level", "advantage"],
+      "tags": [
+        "agentic-rl",
+        "rl",
+        "ppo",
+        "grpo",
+        "llm-training",
+        "post-training",
+        "token-level",
+        "sequence-level",
+        "advantage"
+      ],
       "toc": true
     },
     {
@@ -194,17 +351,40 @@
       "title": "Agentic RL 3: From Tokens to Trajectories, Long-Horizon Reinforcement Learning",
       "description": "What is after GRPO? Advanced long-horizon agentic reinforcement learning. (DAPO, GSPO, SAO, FlashREINFORCE, more advanced training recipes.)",
       "date": "2026-10-10",
-      "tags": ["agentic-rl", "rl", "long-horizon", "trajectory", "llm-training", "post-training"],
+      "tags": [
+        "agentic-rl",
+        "rl",
+        "long-horizon",
+        "trajectory",
+        "llm-training",
+        "post-training"
+      ],
       "toc": true,
       "stub": true
+    },
+    {
+      "id": "midtraining-overview",
+      "source": "mid-training/MidTraining Overview.md",
+      "section": "mid-training",
+      "slug": "midtraining-overview",
+      "title": "MidTraining Overview",
+      "description": "Mid-training paper list & tech reports. (Continual pretraining, retention, RL scaling)",
+      "date": "2026-10-12",
+      "tags": [
+        "mid-training",
+        "continual-pretraining",
+        "retention",
+        "rl",
+        "tech-report"
+      ],
+      "toc": true
     }
   ],
-
   "pages": [
     {
       "id": "home",
       "kind": "home",
-      "title": "LLM Notes"
+      "title": "Frontier LLM Notes"
     },
     {
       "id": "search",
@@ -213,9 +393,14 @@
       "description": "Full-text search across all notes."
     }
   ],
-
   "skipped": [
-    { "source": "AGENTS.md", "reason": "仓库内的 agent 约定，不对外发布" },
-    { "source": "report/README.md", "reason": "report 章节的 PDF 被 .gitignore 排除，链接会死链" }
+    {
+      "source": "AGENTS.md",
+      "reason": "仓库内的 agent 约定，不对外发布"
+    },
+    {
+      "source": "report/README.md",
+      "reason": "report 章节的 PDF 被 .gitignore 排除，链接会死链"
+    }
   ]
 }
