@@ -248,7 +248,7 @@ $$
 $$
 
 $$
-\begin{aligned} J_{\mathrm{GRPO}}^{\mathrm{clip}}(\theta) ={}& \mathbb E_{\substack{ q\sim P(Q)\\ \{o_i\}_{i=1}^{G}\sim\pi_{\theta_{\mathrm{old}}}(\cdot\mid q) }} \Bigg[ \frac1G\sum_{i=1}^G\frac1{T_i}\sum_{t=1}^{T_i}\\ &\min\Big( \rho_{i,t}(\theta)\hat A_i,\, \operatorname{clip}\left( \rho_{i,t}(\theta),1-\epsilon,1+\epsilon \right)\hat A_i \Big) \Bigg] \end{aligned} 
+\begin{aligned} J_{\mathrm{GRPO}}^{\mathrm{clip}}(\theta) ={}& \operatorname*{\mathbb E}_{\substack{ q\sim P(Q)\\ \{o_i\}_{i=1}^{G}\sim\pi_{\theta_{\mathrm{old}}}(\cdot\mid q) }} \Bigg[ \frac1G\sum_{i=1}^G\frac1{T_i}\sum_{t=1}^{T_i}\\ &\min\Big( \rho_{i,t}(\theta)\hat A_i,\, \operatorname{clip}\left( \rho_{i,t}(\theta),1-\epsilon,1+\epsilon \right)\hat A_i \Big) \Bigg] \end{aligned} 
 $$
 原始 GRPO 将 Reference KL 作为单独的惩罚项，理论上的 KL Divergence 定义为：
 
@@ -269,7 +269,7 @@ $$
 定义 KL Regularization：
 
 $$
-J_{\mathrm{GRPO}}^{\mathrm{KL}}(\theta) = \mathbb E_{\substack{ q\sim P(Q)\\ \{o_i\}_{i=1}^G\sim\pi_{\theta_{\mathrm{old}}}(\cdot\mid q) }} \left[ \frac1G\sum_{i=1}^G \frac1{T_i}\sum_{t=1}^{T_i} \widehat D_{\mathrm{KL},i,t}(\theta) \right]
+J_{\mathrm{GRPO}}^{\mathrm{KL}}(\theta) = \operatorname*{\mathbb E}_{\substack{ q\sim P(Q)\\ \{o_i\}_{i=1}^G\sim\pi_{\theta_{\mathrm{old}}}(\cdot\mid q) }} \left[ \frac1G\sum_{i=1}^G \frac1{T_i}\sum_{t=1}^{T_i} \widehat D_{\mathrm{KL},i,t}(\theta) \right]
 $$
 
 $$
