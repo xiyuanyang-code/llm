@@ -8,6 +8,11 @@ buildDrafts: false
 buildFuture: false
 buildExpired: false
 
+# 笔记改名/换目录后（status.json 里的 slug 跟着变），上一次构建留在 public/ 里的
+# 旧页面不会自己消失。开着这个，构建时会把目标目录里不在本次输出里的文件删掉。
+# CI 每次都是干净检出，影响的是本地反复构建的情况 —— 遇到过旧 URL 还能打开的问题。
+cleanDestinationDir: true
+
 # 首页是全部内容的索引，不要把新内容挤到第 2 页去（默认每页只有 10 条，
 # 内容一旦超过 10 条，最新加的专题/文章就会从首页"消失"）。
 pagination:
