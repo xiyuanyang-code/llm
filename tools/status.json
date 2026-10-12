@@ -4,7 +4,7 @@
   "site": {
     "title": "LLM Notes",
     "baseURL": "https://xiyuanyang-code.github.io/llm/",
-    "description": "LLM 架构、训练与推理的中文学习笔记。",
+    "description": "Advanced LLM Notes on model architecture, infra, and pre/mid/post-training recipes, always updating.",
     "author": "Xiyuan Yang"
   },
 
@@ -28,7 +28,7 @@
       "id": "model-arch",
       "slug": "model-arch",
       "title": "Model Architecture",
-      "description": "基座模型架构",
+      "description": "Base Model Architecture",
       "date": "2026-09-22",
       "tags": ["model-architecture", "transformer", "attention", "architecture"],
       "toc": true
@@ -49,7 +49,7 @@
       "slug": "slime",
       "parent": "infra",
       "title": "Slime 101",
-      "description": "THUDM slime infra：连接 Megatron 与 SGLang, 为 RL scaling 设计的 LLM post-training 框架。",
+      "description": "THUDM Slime infra: bridging Megatron and SGLang for RL-scaling LLM post-training.",
       "date": "2026-09-18",
       "tags": ["slime", "rl", "post-training", "megatron", "sglang", "ray"],
       "toc": true
@@ -58,7 +58,7 @@
       "id": "post-training",
       "slug": "post-training",
       "title": "Post Training",
-      "description": "大语言模型后训练前沿后训练, 数据配比 & 后训练算法",
+      "description": "Frontier LLM post-training: data mixture & post-training algorithms.",
       "date": "2026-10-08",
       "tags": ["post-training", "rl", "sft", "opd", "training-recipes"],
       "toc": true
@@ -104,7 +104,7 @@
       "section": "model-arch",
       "slug": "decoding",
       "title": "Advanced LLMs 3: FLOPs and Decoding",
-      "description": "FLOPs Analysis, Speculative Decoding, Multi-Token Prediction。",
+      "description": "FLOPs Analysis, Speculative Decoding, Multi-Token Prediction.",
       "date": "2026-09-22",
       "tags": ["decoding", "prefill", "kv-cache", "roofline", "memory-bound", "speculative-decoding", "multi-token-prediction", "inference"],
       "toc": true
@@ -115,7 +115,7 @@
       "section": "model-arch",
       "slug": "optimizers",
       "title": "Advanced LLMs 4: Optimizers",
-      "description": "Classical optimizers for llm pretraining. (SGD, Adam, MUON)",
+      "description": "Classical optimizers for LLM pretraining. (SGD, Adam, MUON)",
       "date": "2026-09-22",
       "tags": ["optimizer", "training-stability", "pre-training", "muon"],
       "toc": true,
@@ -139,7 +139,7 @@
       "section": "slime",
       "slug": "slime-training",
       "title": "Slime101: Slime Core Training Pipeline",
-      "description": "Core Slime training pipeline analysis. (Ray, Magatron, SGlang)",
+      "description": "Core Slime training pipeline analysis. (Ray, Megatron, SGLang)",
       "date": "2026-09-18",
       "tags": ["slime", "megatron", "ray", "rl", "post-training", "actor", "rollout", "distributed-training"],
       "toc": true
@@ -150,7 +150,7 @@
       "section": "post-training",
       "slug": "frontier-post-training",
       "title": "Frontier Post Training Pipelines",
-      "description": "前沿基座模型中后训练技术报告分析和总结 (持续更新)",
+      "description": "Post-training analysis & summaries from frontier base model tech reports (continuously updated).",
       "date": "2026-10-08",
       "tags": ["post-training", "rl", "agentic-rl", "deepseek", "sft", "opd", "model-merging", "dsec", "mopd", "scaffold", "environment", "tech-report"],
       "toc": true
@@ -161,7 +161,7 @@
       "section": "agentic-rl",
       "slug": "from-policy-gradient-to-ppo",
       "title": "Agentic RL 1: From Policy Gradient to PPO",
-      "description": "From RL Basis to Policy Gradient (reward-to-go, advantage estimations), REINFORCE, Actor-Critic, PPO (Impoertance Sampling and Clipping)",
+      "description": "From RL Basis to Policy Gradient (reward-to-go, advantage estimations), REINFORCE, Actor-Critic, PPO (Importance Sampling and Clipping)",
       "date": "2026-10-10",
       "tags": ["agentic-rl", "rl", "policy-gradient", "reinforce", "actor-critic", "advantage", "ppo", "importance-sampling", "clipping", "training-recipes"],
       "toc": true
@@ -172,7 +172,7 @@
       "section": "agentic-rl",
       "slug": "rl-for-llms",
       "title": "Agentic RL 2: RL for LLMs",
-      "description": "RL Methods for LLM PostTraining (vanila-ppo, RLHF-PPO, DPO, RLVR, DeepSeek-Math-GRPO)",
+      "description": "RL Methods for LLM PostTraining (vanilla-ppo, RLHF-PPO, DPO, RLVR, DeepSeek-Math-GRPO)",
       "date": "2026-10-10",
       "tags": ["agentic-rl", "rl", "ppo", "grpo", "llm-training", "post-training", "token-level", "sequence-level", "advantage"],
       "toc": true
@@ -201,7 +201,7 @@
       "id": "search",
       "kind": "search",
       "title": "Search",
-      "description": "在全部笔记中做全文检索。"
+      "description": "Full-text search across all notes."
     }
   ],
 
