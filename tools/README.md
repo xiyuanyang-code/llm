@@ -74,13 +74,17 @@ python3 tools/sync.py                              # 只生成，不预览
 
 ### 首页顺序与卡片日期（都不用手维护）
 
-首页卡片的**顺序**和卡片上显示的**日期**由 `sync.py` 一起算出来（`resolve_edit_times()` + `compute_weights()`），顺序规则三组依次排下来：
+首页卡片的**顺序**和卡片上显示的**日期**由 `sync.py` 一起算出来（`resolve_edit_times()` + `compute_weights()`），顺序分三段：
 
-1. **顶层专题** —— 按 `status.json` 里 `sections` 数组的书写顺序。想换大板块次序就调数组，例如现在是 `Above All → Model Architecture → Pre/Mid/Post-Training → LLM Infra`。
-2. **二级专题**（`parent` 指向别人的）—— 排在顶层专题之后，彼此按编辑时间新 → 旧。
-3. **文章** —— 排在所有专题之后，按编辑时间新 → 旧。
+1. **置顶卡片** —— `Above All`（`pin: intro`），靠 `sections` 数组里排第一 + 最小 weight 固定在顶部；
+2. **一级专题**（没写 `parent` 的 section）—— 按 `status.json` 里 `sections` 数组的书写顺序。想换大板块次序就调数组，现在是 `Model Architecture → Pre-Training → Mid-Training → Post-Training → LLM Infra`；
+3. **二级专题（写了 `parent` 的）+ 文章** —— **混在同一条时间轴上**，按编辑时间新 → 旧。所以 `MidTraining Overview`（文章）会排在 `Slime 101`（二级专题）前面。
 
-同一时间的，保持清单里的书写顺序（所以一个系列的多篇仍按清单顺序读下来）。
+同一时间的：二级专题在前、文章在后，再同则按清单里的书写顺序（所以一个系列的多篇仍按清单顺序读下来）。
+
+角标也跟着分两级：一级专题是淡蓝的 `Section`，二级专题是灰蓝的 `Sub-Section`（配色见 `docs/assets/css/extended/pin-cards.css`；二级的标记由 `sync.py` 依 `parent` 写进 frontmatter 的 `sub`）。
+
+> ⚠️ 自动生成的 weight 从 **1** 开始编，不用 0：Hugo 把 `weight = 0` 当成「没设」，会把那张卡片扔到所有设了 weight 的页面**后面** —— 第一张卡片掉到最末尾。踩过一次。
 
 **「编辑时间」怎么来的**（`source_edit_time()`）：
 

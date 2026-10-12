@@ -341,33 +341,49 @@ def resolve_edit_times(manifest: dict):
 def compute_weights(manifest: dict, sec_time: dict, post_time: list):
     """自动生成首页卡片顺序，省掉手工填 weight。
 
-    顺序规则，三组依次排下来：
-      1. 顶层专题 —— 按 status.json 里 sections 数组的书写顺序（想换大板块次序就调整数组）；
-      2. 二级专题 —— 排在顶层专题之后，彼此按编辑时间新 -> 旧；
-      3. 文章     —— 排在所有专题之后，按编辑时间新 -> 旧。
-    同时间的保持清单里的书写顺序。卡片上显示的日期同样来自编辑时间，
-    所以「排序」和「日期」永远是一致的。
+    顺序分三段：
+      1. 置顶卡片（Above All，pin=self）永远第一 —— 靠负 weight 是过去的老办法，
+         现在直接给它最小 weight 就行，它在 sections 数组里也排第一；
+      2. 一级 Section（`parent` 为空的专题）—— 按 status.json 里 sections 数组的顺序。
+         想换大板块次序就调整数组；
+      3. 二级 Section 和文章 —— **混在一条时间轴上**，按编辑时间新 -> 旧。
+         所以「MidTraining Overview（10-12）」会排在「Slime 101（10-08）」前面，
+         哪怕前者是文章、后者是专题卡片。
+    同一时间的：二级 Section 在前，然后是文章；再同则按清单里的书写顺序。
+    卡片上显示的日期同样来自编辑时间，所以「顺序」和「日期」永远一致。
 
     status.json 里显式写了的 weight 仍然覆盖自动值，留作强制排序的后门。
     """
     sections = manifest.get("sections") or []
     posts = manifest.get("posts") or []
-    position = {sec.get("id"): i for i, sec in enumerate(sections)}
+    sec_by_id = {sec.get("id"): sec for sec in sections}
 
-    def newer_first(seq_index: int, stamp):
-        return (-(stamp or 0), seq_index)
+    def item_stamp(kind: str, seq: int, obj: dict) -> float:
+        if kind == "sec":
+            return sec_time[obj["id"]][0] or 0
+        return post_time[seq][0] or 0
 
-    top = [sec for sec in sections if not sec.get("parent")]
-    sub = [sec for sec in sections if sec.get("parent")]
-    sub.sort(key=lambda sec: newer_first(position[sec["id"]], sec_time[sec["id"]][0]))
+    top = [(seq, sec) for seq, sec in enumerate(sections) if not sec.get("parent")]
+    rest = ([("sec", seq, sec) for seq, sec in enumerate(sections) if sec.get("parent")]
+            + [("post", seq, post) for seq, post in enumerate(posts)])
+    rest.sort(key=lambda item: (-item_stamp(*item),
+                                0 if item[0] == "sec" else 1,   # 同时间：二级专题先于文章
+                                item[1]))
 
-    ordered = top + sub
-    total = len(ordered)
-    sec_weight = {sec["id"]: -(total - i) for i, sec in enumerate(ordered)}
-
-    ranked = sorted(range(len(posts)),
-                    key=lambda i: newer_first(i, post_time[i][0]))
-    post_weight = {index: 10 + pos for pos, index in enumerate(ranked)}
+    # weight 从 1 开始编：Hugo 把 weight = 0 当成「没设」，会排到所有设了 weight 的页面后面，
+    # 于是第一张卡片反而掉到最末 —— 踩过一次，别再踩。
+    sec_weight, post_weight = {}, {}
+    position = 1
+    for _, sec in top:
+        sec_weight[sec["id"]] = position
+        position += 1
+    for kind, seq, obj in rest:
+        if kind == "sec":
+            sec_weight[obj["id"]] = position
+        else:
+            post_weight[seq] = position
+        position += 1
+    assert not (set(sec_weight) ^ set(sec_by_id))
     return sec_weight, post_weight
 
 
@@ -670,6 +686,8 @@ def build_plan(manifest: dict, report: Report):
             "title": sec.get("title"),
             "date": sec_time[sec["id"]][1],
             "description": sec.get("description"),
+            # 只有二级专题带这个标记，layouts/list.html 据此换成「Sub-Section」角标
+            "sub": True if sec.get("parent") else None,
             "tags": sec.get("tags"),
             "weight": sec.get("weight", sec_weight.get(sec["id"])),
             "pin": sec.get("pin"),
