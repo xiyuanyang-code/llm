@@ -99,7 +99,7 @@ python3 tools/sync.py                              # 只生成，不预览
 | `[文字](./a.md)` | `[文字]({{< relref "…" >}})`，站点换路径也不会 404 |
 | 正文里的 `# 一级标题` | 降为 `##` |
 
-以下**不需要**转换，由 Goldmark / KaTeX 自己处理：`[^1]` 脚注、裸 URL 自动成链、`$...$` 与 `$$...$$` 公式。
+以下**不需要**转换，由 Goldmark / Hugo 自己处理：`[^1]` 脚注、裸 URL 自动成链、`$...$` 与 `$$...$$` 公式。
 
 > ⚠️ **公式依赖 `docs/hugo.yaml` 里的 Goldmark passthrough 扩展，不要删。**
 > 转换器只负责把公式**原样**写进 markdown，但 Goldmark 默认还会继续处理它，实测会踩两个坑：
@@ -107,6 +107,13 @@ python3 tools/sync.py                              # 只生成，不预览
 > 二是 `typographer` 扩展把 `l'` 的撇号换成弯引号 `’`。
 > 开启 `passthrough`（并把 `typographer` 关掉）后，公式在 markdown → HTML 这一步被完整隔离。
 > 这条链路上 268 个公式曾坏掉 49 个，修好后逐字保留 268 个。
+
+> ℹ️ **公式是构建期渲染的**，由 `docs/layouts/_markup/render-passthrough.html` 调 `transform.ToMath` 完成（需要 Hugo ≥ 0.132）。
+> 曾经走的是浏览器端 KaTeX auto-render，踩了两个坑，所以换掉：
+> 一是相邻的两个 `$$` 块会被输出成紧挨着的一段文本（minify 连两行之间的换行也吃掉），`$$$$` 连在一起后 auto-render 配不上对，整块公式退化成一行源码；
+> 二是公式里出现 `<` 时（例如 `o_{i,<t}`），passthrough 是原样输出的，浏览器会把 `<t>` 当成标签解析，文本节点被打断，同样渲染失败。
+> 构建期渲染后每条公式都是独立的 `<span class="katex">`，两个毛病一起消失，也不再需要 CDN 上的 `katex.min.js` / `auto-render.min.js`（只剩一份 `katex.min.css`）。
+> 代价是 HTML 变大（`rl-for-llms` 单页 45KB → 552KB，gzip 后 40KB），换来的是无 JS 也能看公式、公式进搜索索引。
 
 两个关键实现细节：
 

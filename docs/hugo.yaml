@@ -105,6 +105,7 @@ markup:
       # 不开的话，公式里的 _ 会被当作斜体标记、' 会被 typographer 换成弯引号，
       # 例如 `\mathbf{p}_t^{\text{slc}}[j] = \sum_{m=0}...` 的 1、2 个下划线会被配成
       # 一对 <em>，KaTeX 拿到的就是残缺字符串，整个公式渲染失败。
+      # 隔离出来的公式再由 layouts/_markup/render-passthrough.html 在构建期渲染成 HTML。
       passthrough:
         enable: true
         delimiters:

@@ -1,0 +1,24 @@
+{{- /* 公式渲染钩子（需要 Hugo ≥ 0.132 的 transform.ToMath）。
+       笔记里的 $...$ / $$...$$ 先被 Goldmark 的 passthrough 扩展从 markdown 里隔离出来，
+       再交到这里，用 transform.ToMath 在**构建期**渲染成 KaTeX 的 HTML + MathML。
+
+       为什么不在浏览器端跑 KaTeX auto-render（2026-10 改）：
+       1) 相邻的两个 $$ 块会被 Goldmark 输出成紧挨着的一段文本（minify 还会把两行之间的
+          换行也吃掉），$$$$ 连在一起后 auto-render 无法配对，整块公式退化成一行源码；
+       2) 公式里出现 < 时（例如 o_{i,<t}），passthrough 是原样输出的，浏览器会把 <t> 当成
+          标签解析，文本节点被打断，同样是渲染失败。
+       构建期渲染后每条公式都是一个独立的 <span class="katex">，两个毛病一起消失；
+       也不再需要 CDN 上的 katex.min.js / auto-render.min.js（弱网和无 JS 环境下公式照样在），
+       公式文本还进了 HTML，可被搜索与 RSS 收录。只是 docs/assets 里仍需 katex.min.css。
+
+       渲染失败**不阻断构建**：会在页面里留一个显眼的红色占位（带原始 LaTeX），
+       同时在构建日志里打警告 —— 让站点照常发布，但问题不会被忽略。 */ -}}
+{{- $opts := dict "output" "htmlAndMathml" "displayMode" (eq .Type "block") -}}
+{{- with try (transform.ToMath .Inner $opts) -}}
+  {{- with .Err -}}
+    {{- warnf "公式渲染失败 [%s]: %s\n    原文: %s" $.Page.File.Path (printf "%s" .) $.Inner -}}
+    <span class="math-error" title="{{ $.Inner }}">{{ if eq $.Type "block" }}$${{ else }}${{ end }}{{ $.Inner }}{{ if eq $.Type "block" }}$${{ else }}${{ end }}</span>
+  {{- else -}}
+    {{- .Value -}}
+  {{- end -}}
+{{- end -}}

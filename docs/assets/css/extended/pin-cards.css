@@ -67,3 +67,17 @@
   border-radius: 4px;
   font-size: 0.9rem;
 }
+
+/* 构建期渲染失败的公式（layouts/_markup/render-passthrough.html 的兜底）：
+   直接把原始 LaTeX 摆在页面里，红底等宽，一眼能看出是哪条没渲染出来。 */
+.md-content .math-error {
+  display: block;
+  border-left: 3px solid #dc2626;
+  background: color-mix(in srgb, #dc2626 10%, transparent);
+  padding: 0.35rem 0.7rem;
+  border-radius: 4px;
+  font-family: var(--code-font, ui-monospace, "SFMono-Regular", Menlo, monospace);
+  font-size: 0.88rem;
+  overflow-x: auto;
+  white-space: pre-wrap;
+}
