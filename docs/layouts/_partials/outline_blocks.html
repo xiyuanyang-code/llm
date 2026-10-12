@@ -1,0 +1,45 @@
+{{- /*
+  Above All 页专用：按「一级专题」分组，每块 = 专题标题 + 说明 + 它自己的卡片。
+
+  展开哪些页面：所有 Kind 为 section、且没有 sub 标记的（即 status.json 里 parent 为空的
+  一级专题），按 weight 排 —— weight 是 sync.py 按「一级专题按清单顺序」编的号，所以这里
+  的顺序和首页完全一致。
+
+  每个块里放：该专题自己的文章（.RegularPages）+ 它下面的二级专题（.Sections），
+  同样按 weight，于是块内也是「二级专题 + 文章按时间新 -> 旧」那一套。
+
+  触发条件：专题的 frontmatter 里有 outline = true（status.json 里写 "outline": true）。
+*/ -}}
+{{- $sections := where site.Pages "Kind" "section" }}
+{{- $sections = where $sections ".Params.sub" "ne" true }}
+{{- $sections = where $sections ".Params.outline" "ne" true }}  {{/* 别把自己（Above All）也列成一块 */}}
+{{- $sections = where $sections ".File" "ne" nil }}
+{{- $sections = where $sections "Type" "in" site.Params.mainSections }}
+{{- with $sections.ByWeight }}
+<div class="outline-blocks">
+  {{- range . }}
+  <section class="outline-block">
+    <header class="outline-block-header">
+      <h2 class="outline-block-title">
+        <a href="{{ .RelPermalink }}">{{ .Title }}</a>
+      </h2>
+      {{- with .Description }}
+      <p class="outline-block-desc">{{ . | plainify }}</p>
+      {{- end }}
+    </header>
+    {{- /* RegularPagesRecursive：把子专题里的文章也一并列出来，这一页当作全站索引，
+           例如 Post Training 块里既要有 Agentic RL 这张专题卡，也要有它的三篇文章。 */}}
+    {{- $items := union .RegularPagesRecursive .Sections }}
+    {{- with $items.ByWeight }}
+    <div class="outline-block-items">
+      {{- range . }}
+      {{- partial "entry_card.html" (dict "page" .) }}
+      {{- end }}
+    </div>
+    {{- else }}
+    <p class="outline-block-empty">这个专题还没有文章。</p>
+    {{- end }}
+  </section>
+  {{- end }}
+</div>
+{{- end }}

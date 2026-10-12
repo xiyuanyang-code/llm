@@ -1,12 +1,13 @@
 {{- /*
   本文件 fork 自 themes/PaperMod/layouts/list.html（v8.x）。
-  主题升级后需要把这个文件与新版主题逐段对比，重新套用下面 4 处 PATCH。
+  主题升级后需要把这个文件与新版主题逐段对比，重新套用下面 5 处 PATCH。
   搜索 "PATCH" 可以定位全部改动点。
 
   PATCH 1  首页卡片列表同时包含文章(page)和专题(section)
   PATCH 2  首页把 .Content 挪到 home-info 卡片之后
-  PATCH 3  <article> 注入 pin-<name> class，用于首页置顶配色
-  PATCH 4  卡片摘要优先用 frontmatter 的 description
+  PATCH 3  卡片（含角标与摘要）抽成 partials/entry_card.html，首页与 Above All 分组块共用
+  PATCH 4  卡片摘要优先用 frontmatter 的 description（在 entry_card.html 里）
+  PATCH 5  outline = true 的页面（Above All）在正文之后按一级专题分组展开卡片
 */ -}}
 {{- define "main" }}
 
@@ -49,6 +50,12 @@
 </div>
 {{- end }}
 
+{{- /* PATCH 5: Above All 页在正文之后按一级专题分组，每块列出该专题自己的卡片。
+       开关来自 frontmatter 的 outline，由 status.json 里该专题的 "outline": true 生成。 */}}
+{{- if .Params.outline }}
+{{- partial "outline_blocks.html" . }}
+{{- end }}
+
 {{- $pages := union .RegularPages .Sections }}
 
 {{- if .IsHome }}
@@ -88,44 +95,10 @@
 {{- $class = "post-entry tag-entry" }}
 {{- end }}
 
-{{- /* PATCH 3: pin-<name> 由 assets/css/extended/pin-cards.css 提供配色。
-       is-section    一级专题（status.json 里 parent 为空的 section）-> Section 角标
-       is-subsection 二级专题（写了 parent 的）-> Sub-Section 角标，配色不同，免得两级混在一起分不清
-       已经 pin 的卡片显示 Pinned，不重复加。
-       「是否为二级」看 frontmatter 的 sub，由 sync.py 依 parent 写出来。 */}}
-<article class="{{ $class }}{{ with .Params.pin }} pin-{{ . }}{{ end }}{{ if eq .Kind "section" }}{{ if .Params.sub }} is-subsection{{ else }}{{ if not .Params.pin }} is-section{{ end }}{{ end }}{{ end }}">
-  {{- $isHidden := (.Param "cover.hiddenInList") | default (.Param "cover.hidden") | default false }}
-  {{- partial "cover.html" (dict "cxt" . "IsSingle" false "isHidden" $isHidden) }}
-  <header class="entry-header">
-    <h2 class="entry-hint-parent">
-      {{- .Title }}
-      {{- if .Draft }}
-      <span class="entry-hint" title="Draft">
-        <svg xmlns="http://www.w3.org/2000/svg" height="20" viewBox="0 -960 960 960" fill="currentColor">
-          <path
-            d="M160-410v-60h300v60H160Zm0-165v-60h470v60H160Zm0-165v-60h470v60H160Zm360 580v-123l221-220q9-9 20-13t22-4q12 0 23 4.5t20 13.5l37 37q9 9 13 20t4 22q0 11-4.5 22.5T862.09-380L643-160H520Zm300-263-37-37 37 37ZM580-220h38l121-122-18-19-19-18-122 121v38Zm141-141-19-18 37 37-18-19Z" />
-        </svg>
-      </span>
-      {{- end }}
-    </h2>
-  </header>
-  {{- if (ne (.Param "hideSummary") true) }}
-  <div class="entry-content">
-    {{- /* PATCH 4: 优先用 status.json 提供的 description，缺失时才回退到自动摘要。 */}}
-    {{- with .Description }}
-    <p>{{ . | plainify }}</p>
-    {{- else }}
-    <p>{{ .Summary | plainify | htmlUnescape }}{{ if .Truncated }}...{{ end }}</p>
-    {{- end }}
-  </div>
-  {{- end }}
-  {{- if not (.Param "hideMeta") }}
-  <footer class="entry-footer">
-    {{- partial "post_meta.html" . -}}
-  </footer>
-  {{- end }}
-  <a class="entry-link" aria-label="post link to {{ .Title | plainify }}" href="{{ .Permalink }}"></a>
-</article>
+{{- /* PATCH 3: 卡片抽成 partials/entry_card.html，首页和 Above All 的分组块共用一份。
+       角标（Pinned / Section / Sub-Section）的判定也在那个 partial 里，配色见
+       assets/css/extended/pin-cards.css。 */}}
+{{- partial "entry_card.html" (dict "page" . "class" $class) }}
 {{- end }}
 
 {{- if gt $paginator.TotalPages 1 }}

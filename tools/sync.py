@@ -688,6 +688,8 @@ def build_plan(manifest: dict, report: Report):
             "description": sec.get("description"),
             # 只有二级专题带这个标记，layouts/list.html 据此换成「Sub-Section」角标
             "sub": True if sec.get("parent") else None,
+            # outline: true 的专题页会在正文后面按一级专题分组列出卡片（Above All 用）
+            "outline": True if sec.get("outline") else None,
             "tags": sec.get("tags"),
             "weight": sec.get("weight", sec_weight.get(sec["id"])),
             "pin": sec.get("pin"),

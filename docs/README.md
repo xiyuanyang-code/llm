@@ -8,10 +8,13 @@
 
 ```
 docs/hugo.yaml                            # 站点配置
-docs/layouts/list.html                    # fork 自 PaperMod，打了 4 处 PATCH（见文件头注释）
+docs/layouts/list.html                    # fork 自 PaperMod，打了 5 处 PATCH（见文件头注释）
+docs/layouts/_partials/entry_card.html    # 一张卡片（标题/摘要/日期/角标），首页与 Above All 共用
+docs/layouts/_partials/outline_blocks.html  # Above All 页按一级专题分组的块
 docs/layouts/_markup/render-passthrough.html  # 公式：构建期调 transform.ToMath 渲染
 docs/layouts/_partials/extend_head.html   # KaTeX 样式表（公式的 HTML 部分靠它排版）
-docs/assets/css/extended/pin-cards.css    # 首页置顶卡片配色 + 缺图/公式失败的占位样式
+docs/assets/css/extended/pin-cards.css    # 置顶/一级/二级卡片角标配色 + 缺图、公式失败的占位样式
+docs/assets/css/extended/outline-blocks.css  # Above All 分组块的排版
 docs/themes/PaperMod                      # 主题，git submodule
 ```
 

@@ -1,0 +1,49 @@
+{{- /*
+  一张卡片（标题 + 摘要 + 元信息），供两处共用：
+    · layouts/list.html —— 首页/专题页的卡片列表
+    · layouts/_partials/outline_blocks.html —— Above All 页里按一级专题分组的块
+
+  参数（dict）：
+    page  = 要渲染的页面（必填）
+    class = 附加的 class，比如首页的 first-entry / tag-entry（选填）
+
+  角标规则与 pin-cards.css 对应：
+    pin-<name>    有 frontmatter 的 pin 时加，只有 Above All 用它（Pinned）
+    is-subsection 二级专题（sync.py 依 parent 写的 sub 标记）-> Sub-Section
+    is-section    一级专题 -> Section；已经 pin 的不重复加
+*/ -}}
+{{- $page := .page -}}
+{{- $class := .class | default "post-entry" -}}
+<article class="{{ $class }}{{ with $page.Params.pin }} pin-{{ . }}{{ end }}{{ if eq $page.Kind "section" }}{{ if $page.Params.sub }} is-subsection{{ else }}{{ if not $page.Params.pin }} is-section{{ end }}{{ end }}{{ end }}">
+  {{- $isHidden := ($page.Param "cover.hiddenInList") | default ($page.Param "cover.hidden") | default false }}
+  {{- partial "cover.html" (dict "cxt" $page "IsSingle" false "isHidden" $isHidden) }}
+  <header class="entry-header">
+    <h2 class="entry-hint-parent">
+      {{- $page.Title }}
+      {{- if $page.Draft }}
+      <span class="entry-hint" title="Draft">
+        <svg xmlns="http://www.w3.org/2000/svg" height="20" viewBox="0 -960 960 960" fill="currentColor">
+          <path
+            d="M160-410v-60h300v60H160Zm0-165v-60h470v60H160Zm0-165v-60h470v60H160Zm360 580v-123l221-220q9-9 20-13t22-4q12 0 23 4.5t20 13.5l37 37q9 9 13 20t4 22q0 11-4.5 22.5T862.09-380L643-160H520Zm300-263-37-37 37 37ZM580-220h38l121-122-18-19-19-18-122 121v38Zm141-141-19-18 37 37-18-19Z" />
+        </svg>
+      </span>
+      {{- end }}
+    </h2>
+  </header>
+  {{- if (ne ($page.Param "hideSummary") true) }}
+  <div class="entry-content">
+    {{- /* 优先用 status.json 提供的 description，缺失时才回退到自动摘要。 */}}
+    {{- with $page.Description }}
+    <p>{{ . | plainify }}</p>
+    {{- else }}
+    <p>{{ $page.Summary | plainify | htmlUnescape }}{{ if $page.Truncated }}...{{ end }}</p>
+    {{- end }}
+  </div>
+  {{- end }}
+  {{- if not ($page.Param "hideMeta") }}
+  <footer class="entry-footer">
+    {{- partial "post_meta.html" $page -}}
+  </footer>
+  {{- end }}
+  <a class="entry-link" aria-label="post link to {{ $page.Title | plainify }}" href="{{ $page.Permalink }}"></a>
+</article>

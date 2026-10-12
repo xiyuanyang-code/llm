@@ -56,6 +56,7 @@ python3 tools/sync.py                              # 只生成，不预览
 | `date` | | `YYYY-MM-DD`，**通常不用写**：日期默认取笔记的编辑时间，这里只是兜底 |
 | `tags` | | 会生成 `/tags/<tag>/` 页 |
 | `pin` | | 置顶配色名，取值必须是 `docs/assets/css/extended/pin-cards.css` 里定义过的 |
+| `outline` | | `true` 时，这个专题页会在正文之后**按一级专题分组**列出卡片（`Above All` 用它当全站索引） |
 | `toc` | | 是否显示目录 |
 
 ### post

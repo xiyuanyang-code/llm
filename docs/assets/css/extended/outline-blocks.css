@@ -1,0 +1,60 @@
+/* Above All 页（正文之后）按一级专题分组的分块。
+ *
+ * 结构由 layouts/_partials/outline_blocks.html 输出：
+ *   .outline-blocks > .outline-block > .outline-block-header + .outline-block-items > 卡片
+ * 卡片本身沿用主题的 .post-entry（由 partials/entry_card.html 渲染），所以样式和首页一致，
+ * 这里只负责「分组」这件事：标题块、分组之间的空隙、以及把组内的卡片收窄一点，
+ * 让「一组」在视觉上看得出来是一个整体。
+ */
+
+.outline-blocks {
+  margin-top: 3rem;
+}
+
+.outline-block + .outline-block {
+  margin-top: 3rem;
+}
+
+/* 分组标题：左侧一条强调边，和置顶卡片的 pin 强调边同一个颜色变量 */
+.outline-block-header {
+  border-left: 4px solid var(--pin-accent);
+  padding-left: 0.9rem;
+  margin-bottom: 1.2rem;
+}
+
+/* 比卡片标题明显大一号，一眼能看出「这是一组的开始」 */
+.outline-block-title {
+  font-size: 1.6rem;
+  margin: 0 0 0.2rem;
+  line-height: 1.25;
+}
+
+.outline-block-title a {
+  color: var(--primary);
+  text-decoration: none;
+}
+
+.outline-block-title a:hover {
+  text-decoration: underline;
+}
+
+.outline-block-desc {
+  margin: 0;
+  font-size: 0.92rem;
+  color: var(--secondary);
+}
+
+/* 组内卡片沿用主题 .post-entry 自带的间距和圆角，这里只保证宽度撑满 */
+.outline-block-items .post-entry {
+  width: 100%;
+}
+
+.outline-block-items .post-entry:last-child {
+  margin-bottom: 0;
+}
+
+.outline-block-empty {
+  margin: 0;
+  color: var(--secondary);
+  font-size: 0.92rem;
+}
