@@ -207,8 +207,29 @@ def _git(*args: str) -> str:
 _CONTENT_STAMPS = None
 
 
+def _parse_commit_time(value: str):
+    """把 git 的 %cI 解析成 (时间戳, frontmatter 里要写的日期字符串)。
+
+    两件事必须一起做对：
+
+    1. **带上时区偏移**。写进 frontmatter 的是完整的 `2026-10-14T00:00:33+08:00`，
+       而不是裸的 `2026-10-14` —— 后者会被 Hugo 按站点时区（默认 UTC）当成当天 00:00，
+       对 UTC+8 的作者来说那就是 8 小时后，`buildFuture: false` 会把这个页面
+       直接从构建结果里删掉（踩过：刚提交的三篇在首页整个消失）。
+       写上偏移量之后这个时刻是确定的，跟构建机器的时区无关。
+
+    2. **按提交者的时区算日期**。CI 跑在 UTC，若按构建机器的时区取「今天是几号」，
+       UTC+8 凌晨提交的笔记会显示成前一天。
+    """
+    try:
+        moment = _dt.datetime.strptime(value, "%Y-%m-%dT%H:%M:%S%z")
+    except ValueError:
+        return None
+    return (moment.timestamp(), moment.isoformat())
+
+
 def _content_stamps() -> dict:
-    """路径 -> 「内容最后一次改动」的提交时间戳。改名/挪目录不算改动。
+    """路径 -> 「内容最后一次改动」的提交时间 (时间戳, 'YYYY-MM-DD')。改名/挪目录不算改动。
 
     一次 `git log --name-status -M` 把全仓库历史拉下来（不带 pathspec！带了的话
     git 只看得到半个改名，会把 R100 误判成 A），然后：
@@ -223,15 +244,15 @@ def _content_stamps() -> dict:
     if _CONTENT_STAMPS is not None:
         return _CONTENT_STAMPS
 
-    raw = _git("log", "--name-status", "-M", "--format=%ct")
+    raw = _git("log", "--name-status", "-M", "--format=%cI")
     lineage: dict = {}
     renames, changes = [], []
     stamp = None
     for line in raw.splitlines():
         if not line:
             continue
-        if line.isdigit():
-            stamp = float(line)
+        if "T" in line and line[:1].isdigit():        # 形如 2026-10-14T00:00:33+08:00
+            stamp = _parse_commit_time(line)
             continue
         parts = line.split("\t")
         status, paths = parts[0], parts[1:]
@@ -256,7 +277,7 @@ def _content_stamps() -> dict:
     newest: dict = {}
     for path, when in changes:
         root = find(path)
-        if when > newest.get(root, 0):
+        if when and (newest.get(root) is None or when[0] > newest[root][0]):
             newest[root] = when
 
     _CONTENT_STAMPS = {path: newest.get(find(path)) for path in lineage}
@@ -285,7 +306,12 @@ def source_edit_time(rel_path, fallback=None):
         stamp = path.stat().st_mtime           # 有未提交改动：以工作区为准
     else:
         stamp = _content_stamps().get(rel_path) or path.stat().st_mtime
-    return (stamp, _dt.datetime.fromtimestamp(stamp).strftime("%Y-%m-%d"))
+    if isinstance(stamp, tuple):
+        return stamp                            # 来自 git：带提交者的时区偏移
+    # 来自 mtime（有未提交改动 / 不在 git 里）：用本机时区，同样带偏移量，
+    # 免得「今天改的」被 Hugo 当成未来的页面丢掉。
+    local = _dt.datetime.fromtimestamp(stamp).astimezone()
+    return (stamp, local.replace(microsecond=0).isoformat())
 
 
 def resolve_edit_times(manifest: dict):

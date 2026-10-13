@@ -3,6 +3,13 @@ locale: "zh-cn"
 title: Frontier LLM Notes
 theme: PaperMod
 
+# 日期一律按这个时区解析和显示，不跟随构建机器。
+# Hugo 默认时区是 UTC，而 CI（GitHub Actions）就跑在 UTC：笔记里 00:30 的提交
+# 会被渲染成前一天的日期；只写日期（2026-10-14）的话更糟，会被当成当天 00:00 UTC
+# = 本地 08:00，落在未来，buildFuture: false 直接把整个页面从构建结果里删掉。
+# 笔记给出的时间都带 +08:00 偏移量，再把站点时区钉在这里，本地和线上就完全一致。
+timeZone: "Asia/Shanghai"
+
 enableRobotsTXT: true
 buildDrafts: false
 buildFuture: false
