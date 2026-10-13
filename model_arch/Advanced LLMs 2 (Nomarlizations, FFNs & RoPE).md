@@ -40,7 +40,7 @@ https://arxiv.org/pdf/2002.04745 这篇论文给出了系统性的诠释：
 - Pre-Norm 从理论上和实验上分别证明了其训练稳定性往往高于 Post-Norm
 	- Post-Norm 需要很谨慎的 learning rate warmup 的过程，稳定性比 Pre-Norm 差
 
-![[post-norm.png]]
+![[llm/images/post-norm.png]]
 
 除了标准的 Pre-Norm 和 Post-Norm，还有一些更加高级的操作：
 
@@ -198,7 +198,7 @@ https://www.reddit.com/r/LocalLLaMA/comments/14lz7j5/ntkaware_scaled_rope_allows
 
 因此，在线性插值的过程中，会导致低维区域下的旋转变的异常拥挤，会导致效果 drop，可以看到，在低维高频区域，经过线性插值的 PI 和原来的 Rope 存在比较大的差异。
 
-![[ntk.png]]
+![[llm/images/ntk.png]]
 
 在 PI 中，$\theta$ 的格式如下:
 $$(\theta_{\text{pi}})_{i,t} = \frac{t}{S} \cdot b^{-\frac{2(i - 1)}{d}}$$
