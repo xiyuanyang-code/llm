@@ -204,7 +204,7 @@
     },
     {
       "id": "decoding",
-      "source": "model_arch/Advanced LLMs 3 (Decoding).md",
+      "source": "model_arch/Advanced LLMs 3 (FLOPs, Decoding).md",
       "section": "model-arch",
       "slug": "decoding",
       "title": "Advanced LLMs 3: FLOPs and Decoding",

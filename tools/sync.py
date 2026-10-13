@@ -522,14 +522,25 @@ class Doc:
 
     # -- 图片 ---------------------------------------------------------------
     def _asset(self, name: str):
+        """把笔记里 ![[...]] 的写法解析成仓库里真实的图片文件。
+
+        Obsidian 的 vault 根目录是这个仓库的**上一层**（vault 里 llm/ 就是本仓库），
+        所以笔记里会出现三种写法，都要认：
+          images/rope.png        —— assetRoot 相对（最常见的写法）
+          llm/images/rope.png    —— vault 根相对（Obsidian 复制出来的路径就是这种）
+          rope.png               —— 只写文件名
+        解析顺序是「由具体到宽松」：先按原样找，再逐级去掉开头目录找，
+        最后退化到「在 assetRoot 下按文件名找」。
+        """
         root = REPO / (self.manifest.get("assetRoot") or "images")
-        candidate = root / name
-        if candidate.exists():
-            return candidate
-        # 兼容笔记里写了子目录路径的情况
-        candidate = REPO / name
-        if candidate.exists():
-            return candidate
+        parts = Path(name).parts
+        candidates = [root / name]
+        for i in range(len(parts)):
+            candidates.append(REPO / Path(*parts[i:]))
+        candidates.append(root / Path(name).name)
+        for candidate in candidates:
+            if candidate.is_file():
+                return candidate
         return None
 
     def _rewrite_embed(self, match: re.Match) -> str:
