@@ -30,7 +30,7 @@ LLM 本身的参数作为 Policy $\theta$, 我们只考虑单次 LLM 交互的�
 因此，目标函数可以写成一个更简单的形式:
 
 $$
-J(\theta)=\mathbb E_{y\sim\pi_\theta(\cdot\mid x)}[R(x,y)] 
+J(\theta)=\mathbb E_{y\sim\pi_\theta(\cdot\mid x)}[R(x,y)]
 $$
 
 在原始的 Policy Gradient 中，形式是:
@@ -61,7 +61,7 @@ $$
 我们需要额外加一个 KL 惩罚:
 
 $$
-J_{\mathrm{RLHF}}(\theta) = \mathbb E_{q,o\sim\pi_\theta} \left[ r_{\mathrm{RM}}(q,o) \right] - \beta \mathbb E_q\left[ D_{\mathrm{KL}} \left( \pi_\theta(\cdot\mid q) \Vert \pi_{\mathrm{ref}}(\cdot\mid q) \right) \right] 
+J_{\mathrm{RLHF}}(\theta) = \mathbb E_{q,o\sim\pi_\theta} \left[ r_{\mathrm{RM}}(q,o) \right] - \beta \mathbb E_q\left[ D_{\mathrm{KL}} \left( \pi_\theta(\cdot\mid q) \Vert \pi_{\mathrm{ref}}(\cdot\mid q) \right) \right]
 $$
 
 >在我们之前的推导中，我们的数学期望内部是 $R(\tau)$，要求这一项对 $\theta$ 求梯度的时候，梯度为 0, 但是在引入包含 $\theta$ 的 KL 散度项之后，Policy Gradient 还成立吗?
@@ -83,7 +83,7 @@ $$
 \sum_y\pi_\theta(y\mid x) \nabla_\theta\log\frac{\pi_\theta(y\mid x)} {\pi_{\mathrm{ref}}(y\mid x)} = \sum_y\pi_\theta(y\mid x) \nabla_\theta\log{\pi_\theta(y\mid x)} = \sum_y \nabla_\theta\pi_\theta(y\mid x)
 $$
 
-我们惊喜的发现，我们可以使用第一讲推导的零均值性质: 
+我们惊喜的发现，我们可以使用第一讲推导的零均值性质:
 $$
 \sum_y \nabla_\theta\pi_\theta(y\mid x) = \nabla_\theta\sum_y \pi_\theta(y\mid x) = \nabla_\theta 1 = 0
 $$
@@ -119,10 +119,10 @@ $$
 $$
 \boxed{ D_{\mathrm{KL}}(\pi_\theta\Vert\pi_{\mathrm{ref}}) = \mathbb E_{y\sim\pi_\theta} \left[\sum_{t=1}^T k_t\right] }
 $$
-因为模型只会在最后的 sequence-level 给出一个 reward，因此我们需要手动构造 token-level 的 reward，在 RLHF-PPO 中，token-level 的 reward 是这样给出的: 
+因为模型只会在最后的 sequence-level 给出一个 reward，因此我们需要手动构造 token-level 的 reward，在 RLHF-PPO 中，token-level 的 reward 是这样给出的:
 
 $$
-\tilde r_t= \begin{cases} -\beta k_t,&t<T\\[4pt] R(x,y)-\beta k_t,&t=T \end{cases} 
+\tilde r_t= \begin{cases} -\beta k_t,&t<T\\[4pt] R(x,y)-\beta k_t,&t=T \end{cases}
 $$
 
 也就是说：
@@ -217,7 +217,7 @@ $$
 $$
 最后得到：
 $$
-\hat A_i^{\mathrm{GRPO}} = \frac{R_i-\mu_R}{\sigma_R} 
+\hat A_i^{\mathrm{GRPO}} = \frac{R_i-\mu_R}{\sigma_R}
 $$
 在 token-level 的时候，一个 sequence 上生成的所有 token 都享有这个 advantages（因为 GRPO 不再利用 GAE 进行 Advantages 估计，因此需要保证每一个 token 都能拿到 sequence-level 的 advantages）
 
@@ -248,7 +248,7 @@ $$
 $$
 
 $$
-\begin{aligned} J_{\mathrm{GRPO}}^{\mathrm{clip}}(\theta) ={}& \operatorname*{\mathbb E}_{\substack{ q\sim P(Q)\\ \{o_i\}_{i=1}^{G}\sim\pi_{\theta_{\mathrm{old}}}(\cdot\mid q) }} \Bigg[ \frac1G\sum_{i=1}^G\frac1{T_i}\sum_{t=1}^{T_i}\\ &\min\Big( \rho_{i,t}(\theta)\hat A_i,\, \operatorname{clip}\left( \rho_{i,t}(\theta),1-\epsilon,1+\epsilon \right)\hat A_i \Big) \Bigg] \end{aligned} 
+\begin{aligned} J_{\mathrm{GRPO}}^{\mathrm{clip}}(\theta) ={}& \operatorname*{\mathbb E}_{\substack{ q\sim P(Q)\\ \{o_i\}_{i=1}^{G}\sim\pi_{\theta_{\mathrm{old}}}(\cdot\mid q) }} \Bigg[ \frac1G\sum_{i=1}^G\frac1{T_i}\sum_{t=1}^{T_i}\\ &\min\Big( \rho_{i,t}(\theta)\hat A_i,\, \operatorname{clip}\left( \rho_{i,t}(\theta),1-\epsilon,1+\epsilon \right)\hat A_i \Big) \Bigg] \end{aligned}
 $$
 原始 GRPO 将 Reference KL 作为单独的惩罚项，理论上的 KL Divergence 定义为：
 
@@ -278,7 +278,7 @@ $$
 
 > GRPO 中的 KL 设计展开又是一个可以讲很久的 topic，我们暂时在此处忽略。具体可以参考 http://joschu.net/blog/kl-approx.html 这里的 KL Approximations
 
-## Summarize
+## Summary
 
 在 DeepSeek-Math 的论文中，将所有的 RL 和训练算法统一起来，形成了一个实在精彩的段落，在本章节进行细节诠释 (https://arxiv.org/pdf/2402.03300, 5.2: Insights of Reinforcement Learning)
 
@@ -306,7 +306,7 @@ $$
 SFT 的目标是最大化正确答案的 Log Likelihood：
 
 $$
-J_{\mathrm{SFT}}(\theta) = \mathbb E_{(q,o)\sim\mathcal D_{\mathrm{SFT}}} \left[ \frac1{|o|}\sum_t\log\pi_\theta(o_t\mid s_t) \right] 
+J_{\mathrm{SFT}}(\theta) = \mathbb E_{(q,o)\sim\mathcal D_{\mathrm{SFT}}} \left[ \frac1{|o|}\sum_t\log\pi_\theta(o_t\mid s_t) \right]
 $$
 直接求导：
 
@@ -349,7 +349,7 @@ $$
 原始 GRPO 的目标包含：
 
 $$
-J_{\mathrm{GRPO}} = J_{\mathrm{clip}}-\beta J_{\mathrm{KL}} 
+J_{\mathrm{GRPO}} = J_{\mathrm{clip}}-\beta J_{\mathrm{KL}}
 $$
 
 其中单 Token 的 KL Estimator 是：
@@ -375,4 +375,227 @@ $$
 GC_{GRPO}(q, o, t, \pi_{\theta_{rm}}) = \hat{A}_{i,t} + \beta \left(\frac{\pi_{ref}(o_{i,t}|o_{i,<t})}{\pi_{\theta}(o_{i,t}|o_{i,<t})} - 1\right)
 $$
 
+### OPD
 
+On Policy Distillation 是一个比较新颖的 RL 方式，通过引入教师模型，给予 teacher-level 的 token 信号监督，可以实现更稠密的监督信号。OPD 的数据来自 Student 自己生成的 Rollout，但监督信号来自 Teacher 对 Student 所访问的 Prefix 给出的概率分布。
+
+固定一个 Prefix $s$，Reverse-KL OPD 希望最小化：
+$$
+D_{\mathrm{KL}}(p_\theta\Vert p_T) = \sum_{v\in\mathcal V} p_\theta(v\mid s) \log\frac{p_\theta(v\mid s)}{p_T(v\mid s)}
+$$
+
+如果写成最大化目标：$J_{\mathrm{OPD}}(\theta;s) = -D_{\mathrm{KL}}(p_\theta\Vert p_T)$
+
+和 RL 一样，如法炮制展开求梯度：
+
+$$
+J_{\mathrm{OPD}} = -\sum_vp_\theta(v\mid s) \log\frac{p_\theta(v\mid s)}{p_T(v\mid s)}
+$$
+$$
+\begin{aligned} \nabla_\theta J_{\mathrm{OPD}} ={}&-\sum_v\nabla_\theta p_\theta(v\mid s) \left( \log\frac{p_\theta(v\mid s)}{p_T(v\mid s)}+1 \right) \end{aligned}
+$$
+
+我们再次利用零均值性质: $\sum_v\nabla_\theta p_\theta(v\mid s)=0$ 和 log 对数技巧:
+
+$$
+\begin{aligned} \nabla_\theta J_{\mathrm{OPD}} &= -\sum_v\nabla_\theta p_\theta(v\mid s) \log\frac{p_\theta(v\mid s)}{p_T(v\mid s)}\\ &= \sum_vp_\theta(v\mid s) \log\frac{p_T(v\mid s)}{p_\theta(v\mid s)} \nabla_\theta\log p_\theta(v\mid s) \end{aligned}
+$$
+$$
+\nabla_\theta J_{\mathrm{OPD}}(\theta;s) = \mathbb E_{v\sim p_\theta(\cdot\mid s)} \left[ \underbrace{ \log\frac{p_T(v\mid s)}{p_\theta(v\mid s)} }_{GC_{\mathrm{OPD}}} \nabla_\theta\log p_\theta(v\mid s) \right]
+$$
+
+因此，对于常见的 Reverse-KL On-Policy Distillation，在固定 Token Prefix 上使用当前 Student Policy 采样时，可以得到：
+$$
+GC_{\mathrm{OPD}}(q,o,t) = \log\frac{ \pi_{\mathrm{teacher}}(o_t\mid q,o_{<t}) }{ \pi_\theta(o_t\mid q,o_{<t})}
+$$
+
+## On the Insights of Distributions: SFT, RL, OPD
+
+### KL Divergence
+
+我们关注的问题就是从算法原理角度，能否统一所有的后训练算法? 下面的这篇推文从 KL 散度的视角出发，给出了详细的解释。
+相关链接:
+- https://zhuanlan.zhihu.com/p/2070328173166866733
+- https://nrehiew.github.io/blog/sft_rl_opd/
+
+首先，我们重新给出 KL 散度的数学定义，KL 散度的作用是衡量两个概率分布之间的差异情况，但优化方向不同，会导致截然不同的行为：Forward KL 倾向于 Mode Covering（覆盖多个模式），Reverse KL 倾向于 Mode Seeking（集中于某个模式）。
+
+假设有两个概率分布：
+- $P(x)$：目标分布（Target Distribution），希望模型学习的分布。
+- $Q_\theta(x)$：模型分布（Model Distribution），可以通过参数 $\theta$ 优化。
+
+KL Divergence（相对熵）定义为：
+$$
+ D_{\mathrm{KL}}(P\|Q)=\mathbb E_{x\sim P}\left[\log\frac{P(x)}{Q(x)}\right]
+$$
+对于离散分布：
+$$
+D_{\mathrm{KL}}(P\|Q)=\sum_x P(x)\log\frac{P(x)}{Q(x)}
+$$
+
+对于连续分布：
+$$
+D_{\mathrm{KL}}(P\|Q)=\int P(x)\log\frac{P(x)}{Q(x)}dx
+$$
+
+KL 分布有两个重要的数学性质:
+- $D_{\mathrm{KL}}(P\|Q)\geq 0$
+- $D_{\mathrm{KL}}(P\|Q)=0\iff P=Q$
+
+但是，KL 散度不是对称的，如果交换 Q 和 P 的位置，会产生不同的优化目标: $D_{\mathrm{KL}}(P\|Q)\neq D_{\mathrm{KL}}(Q\|P)$
+
+### Forward KL & Reverse KL
+
+Forward KL:
+$$
+D_{\mathrm{KL}}(P\|Q_{\theta})=\mathbb E_{x\sim P}\left[\log\frac{P(x)}{Q_{\theta}(x)}\right] = E_{x\sim P}\left[\log P(x)\right] - E_{x\sim P}\left[\log Q_{\theta}(x)\right]
+$$
+
+因为前一项是针对 P（目标分布）的一个固定值，和 $\theta$ 无关，因此此时 KL 散度等价于后一项：对于在 P 分布中出现的 x，需要最大化他们在当前参数分布中出现的概率。**Forward KL 要求模型尽可能提高目标分布中真实样本的概率。**
+
+> 这本质上就是最大似然估计! 我们需要找到最优的参数 $\theta$ 来最大化概率。
+
+Reverse KL对当前参数分布中进行采样，检验该分布在目标分布中出现的比例。
+$$
+ D_{\mathrm{KL}}(Q_\theta\|P) =\mathbb E_{x\sim Q_\theta}\left[\log\frac{Q_\theta(x)}{P(x)}\right]
+$$
+
+展开：
+$$
+D_{\mathrm{KL}}(Q_\theta\|P) =\mathbb E_{Q_\theta}[\log Q_\theta(x)] -\mathbb E_{Q_\theta}[\log P(x)]
+$$
+
+注意到 $H(Q_\theta)=-\mathbb E_{Q_\theta}[\log Q_\theta(x)]$
+
+因此：$D_{\mathrm{KL}}(Q_\theta\|P) =-H(Q_\theta)-\mathbb E_{Q_\theta}[\log P(x)]$
+
+所以最小化 Reverse KL 等价于最大化：
+
+$$
+\max_\theta\left( \mathbb E_{x\sim Q_\theta}[\log P(x)] +H(Q_\theta) \right)
+$$
+
+这里的目标函数有两项组成：
+- 第一项约束在当前模型采样的区域，P(x) 必须需要有很高的概率
+- 第二项约束了自身分布的熵，熵过小说明分布坍缩了
+
+### Mode Seeking & Mode Covering
+
+我们考虑极端的情况，假设在前向 KL 中，存在 $P(x) > 0, Q(x) \to 0$ 的情况，此时因为 Q 在分母上，因此 KL 散度会变的无穷大。这说明**前向 KL 会严重惩罚那些在当前分布中缺乏，但是在目标分布中存在** 的分布，展现为 ==Mode Covering== (覆盖目标分布，哪怕方差很大)
+
+举一个具体的例子, 考虑一个目标分布有两个模式，我们在前向 KL 作为优化目标的情况下，尝试使用单峰去拟合双峰：
+
+$$
+P(x)=\frac12\mathcal N(-4,1)+\frac12\mathcal N(4,1)
+$$
+
+$$
+Q_\theta(x)=\mathcal N(\mu,\sigma^2)
+$$
+由于：
+$$
+\log Q_\theta(x) =-\frac12\log(2\pi\sigma^2) -\frac{(x-\mu)^2}{2\sigma^2}
+$$
+
+所以最小化 Forward KL 等价于最小化：
+
+$$
+\mathcal L(\mu,\sigma^2) =\frac12\log(2\pi\sigma^2) +\frac{\mathbb E_P[(x-\mu)^2]}{2\sigma^2}
+$$
+对两个参数分别求导得到 0，可以得到：
+
+- $\mu^*=\mathbb E_P[x] = 0$
+- $(\sigma^2)^*=\mathrm{Var}_P(x) = 17$
+
+![[kl_1.png]]
+
+对于 reverse kl，情况会不一样，因为此时数据是在 $P(x)$ 上进行采样的，我们来看 Reverse KL 的优化目标:
+$$
+\max_\theta\left( \mathbb E_{x\sim Q_\theta}[\log P(x)] +H(Q_\theta) \right)
+$$
+- 首先，Q 本身的分布不可以过于尖锐（熵的约束）
+- 其次，**只需要在 Q 分布的区域，目标分布的出现概率较大即可**
+
+因此，目标参数不会选择拟合 P 分布中所有的 Mode，而是会选择性找到一个比较温和的局部分布，使其具备一定拟合性即可，因此我们把这种定义为 ==Mode Seeking==.
+
+### SFT: Off-Policy, Mode-Covering, Forward-KL
+
+定义 Forward KL：
+
+$$
+D_{\mathrm{KL}}(p_{\mathrm{data}}\|q_\theta) =\mathbb E_{x\sim p_{\mathrm{data}}} \left[\log\frac{p_{\mathrm{data}}(x)}{q_\theta(x)}\right]
+$$
+
+因此, KL 散度可以被写成:
+
+$$
+\begin{aligned} D_{\mathrm{KL}}(p_{\mathrm{data}}\|q_\theta) &=\mathbb E_{p_{\mathrm{data}}}[\log p_{\mathrm{data}}(x)]\\ &\quad-\mathbb E_{p_{\mathrm{data}}}[\log q_\theta(x)]\\ &=-H(p_{\mathrm{data}})+H(p_{\mathrm{data}},q_\theta) \end{aligned}
+$$
+- 第一项是静态数据的分布熵，是一个固定值
+- 第二项是模型参数和数据分布的 cross-entropy，这也是我们需要最小化的目标
+
+而我们在上文证明了，前向 KL 散度本质上就是 MLE（最大似然估计），而 SFT 的目标本质也只是一种最大似然估计!
+
+$\max_\theta \prod_{i=1}^{N}q_\theta(y_i|x_i)$ -> $\max_\theta\sum_{i=1}^{N}\log q_\theta(y_i|x_i)$ -> $\mathcal L_{\mathrm{SFT}} =-\frac1N\sum_{i=1}^{N}\log q_\theta(y_i|x_i)$
+
+因此，SFT 的优化目标本质上就是 forward KL 散度，算法需要强制拟合数据集内部出现的所有文本模式，是一种优化强度很高的拟合方式。因此，对 SFT 来说，梯度会被均匀的施加在所有的 token 梯度上，导致模型产生灾难性遗忘等严重问题。
+
+### RL: On-Policy, Mode-Seeking, Reverse-KL
+
+对于 RL 来说，是一种 On Policy 的算法，同时依靠策略梯度提升序列期望奖励。
+
+我们考虑 RLHF-PPO 的优化目标:
+
+$$
+\max_\theta J(\theta) = \mathbb E_{y\sim q_\theta}[R(x,y)] -\beta D_{\mathrm{KL}}(q_\theta\|q_{\mathrm{ref}})
+$$
+
+展开 Reverse KL:
+
+$$
+D_{\mathrm{KL}}(q_\theta\|q_{\mathrm{ref}}) = \mathbb E_{y\sim q_\theta} \left[\log\frac{q_\theta(y|x)}{q_{\mathrm{ref}}(y|x)}\right]
+$$
+代入并合并期望:
+
+$$
+\begin{aligned} J(\theta) &=\mathbb E_{q_\theta}[R(x,y)]\\ &\quad-\beta\mathbb E_{q_\theta} \left[\log\frac{q_\theta(y|x)}{q_{\mathrm{ref}}(y|x)}\right] \end{aligned}
+
+$$
+$$
+ J(\theta) = \mathbb E_{q_\theta}\left[ R(x,y) -\beta\log\frac{q_\theta(y|x)}{q_{\mathrm{ref}}(y|x)} \right]
+$$
+我们构造一个新的概率分布, $Z(x)$ 是一个归一化常数 $Z(x) = \sum_y q_{\mathrm{ref}}(y|x) \exp\left(\frac{R(x,y)}{\beta}\right)$, 这一项可以被理解为: 在 **Reference Model 的原始分布基础上**，根据 Reward 重新加权后得到的理想目标分布。
+
+$$
+p_{\mathrm{reward}}(y|x) = \frac{1}{Z(x)} q_{\mathrm{ref}}(y|x) \exp\left(\frac{R(x,y)}{\beta}\right)
+$$
+根据定义：
+
+$$
+\log p_{\mathrm{reward}}(y|x) = \log q_{\mathrm{ref}}(y|x) +\frac{R(x,y)}{\beta} -\log Z(x)
+$$
+$$
+D_{\mathrm{KL}}(q_\theta\|p_{\mathrm{reward}}) = \mathbb E_{q_\theta} \left[\log\frac{q_\theta(y|x)}{p_{\mathrm{reward}}(y|x)}\right]
+$$
+$$
+\begin{aligned} &D_{\mathrm{KL}}(q_\theta\|p_{\mathrm{reward}})\\ &=\mathbb E_{q_\theta}\left[ \log q_\theta(y|x) -\log q_{\mathrm{ref}}(y|x) -\frac{R(x,y)}{\beta} +\log Z(x) \right] \end{aligned}
+$$
+整理可以得到:
+$$
+\begin{aligned} D_{\mathrm{KL}}(q_\theta\|p_{\mathrm{reward}}) &= D_{\mathrm{KL}}(q_\theta\|q_{\mathrm{ref}})-\frac1\beta\mathbb E_{q_\theta}[R(x,y)] +\log Z(x) \\ &= -\frac1\beta [\mathbb E_{q_\theta}[R(x,y) - \beta D_{\mathrm{KL}}(q_\theta\|q_{\mathrm{ref}})]+ \log Z(x)\end{aligned}
+$$
+由于 $\beta$ 和 $Z(x)$ 对 $\theta$ 的梯度都是 0，因此我们将原始优化目标的梯度写成了一个等价的 Reverse KL 的反向梯度的等价形式。RL 会将自身的分布温和地拟合到 reward 加权后的的 ref-model 分布中。后向 KL 属于 Mode Seeking 范式，所以 RL 的更新会更加温和，是在本身自身高概率（或者具备一定概率）的输出区域进行微调。
+
+### OPD: On-Policy, Reverse-KL
+
+固定一个 Prefix $s$，Reverse-KL OPD 希望最小化：
+$$
+D_{\mathrm{KL}}(p_\theta\Vert p_T) = \sum_{v\in\mathcal V} p_\theta(v\mid s) \log\frac{p_\theta(v\mid s)}{p_T(v\mid s)}
+$$
+如果写成最大化目标：$J_{\mathrm{OPD}}(\theta;s) = -D_{\mathrm{KL}}(p_\theta\Vert p_T)$ 天然就是一个后向 KL 的过程!
+
+> 因为 OPD 的信号监督细化到了 token 级别，因此，一般的 OPD 会要求模型必须使用相同的 tokenizer 和词表进行训练，保证最后输出层的语义 logits 对齐。目前学术界也在研究一些前沿的 OPD 技巧，让跨次表的 token mapping 成为可能。
+
+OPD 相比于纯 RL 具备更完善的奖励信号，因此现在业界的通用范式往往是: SFT 出一个专家模型，通过 OPD/MOPD 等方式对学生模型进行训练。一方面 OPD 也可以缓解 SFT 的灾难性遗忘的问题。
+
+最优策略集合存在无数可行分布，RL仅在模型当前采样邻域内寻优，自动选择**与原始模型KL距离最小**的最优分布，全程不会强行拉扯至遥远外部分布。OPD继承这套On-Policy约束，因此哪怕教师存在能力退化，学生也不会完全复刻教师的缺陷分布。
