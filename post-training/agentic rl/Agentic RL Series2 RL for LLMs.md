@@ -559,11 +559,11 @@ $$
 
 $$
 \begin{aligned} J(\theta) &=\mathbb E_{q_\theta}[R(x,y)]\\ &\quad-\beta\mathbb E_{q_\theta} \left[\log\frac{q_\theta(y|x)}{q_{\mathrm{ref}}(y|x)}\right] \end{aligned}
-
 $$
 $$
  J(\theta) = \mathbb E_{q_\theta}\left[ R(x,y) -\beta\log\frac{q_\theta(y|x)}{q_{\mathrm{ref}}(y|x)} \right]
 $$
+
 我们构造一个新的概率分布, $Z(x)$ 是一个归一化常数 $Z(x) = \sum_y q_{\mathrm{ref}}(y|x) \exp\left(\frac{R(x,y)}{\beta}\right)$, 这一项可以被理解为: 在 **Reference Model 的原始分布基础上**，根据 Reward 重新加权后得到的理想目标分布。
 
 $$
