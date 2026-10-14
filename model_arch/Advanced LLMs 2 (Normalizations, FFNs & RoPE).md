@@ -231,8 +231,6 @@ NTK-by-parts 吸收了 NTK 高频和低频的在压缩时不一致的问题，�
 
 ![[rope.png]]
 
-
-
 ### YaRN
 
 https://arxiv.org/pdf/2309.00071 是在 NTK-Aware 基础上提出的一种新的拉长模型上下文的方法。
