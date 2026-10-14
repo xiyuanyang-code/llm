@@ -179,7 +179,7 @@
     },
     {
       "id": "normalizations-ffn-rope",
-      "source": "model_arch/Advanced LLMs 2 (Nomarlizations, FFNs & RoPE).md",
+      "source": "model_arch/Advanced LLMs 2 (Normalizations, FFNs & RoPE).md",
       "section": "model-arch",
       "slug": "normalizations-ffn-rope",
       "title": "Advanced LLMs 2: Normalizations, FFNs & RoPE",
