@@ -240,6 +240,27 @@
       "stub": true
     },
     {
+      "id": "distributed-parallel-systems",
+      "source": "pre-training/Distributed Parallel Systems for LLM PreTraining.md",
+      "section": "pre-training",
+      "slug": "distributed-parallel-systems",
+      "title": "Distributed Parallel Systems for LLM Pre-Training",
+      "description": "LLM Pretraining Parallelism (GPU Communication, DP/DDP, ZeRO, FSDP, TP, SP, CP, PP, EP, Mixed Precision)",
+      "tags": [
+        "pre-training",
+        "distributed-training",
+        "parallelism",
+        "zero",
+        "fsdp",
+        "tensor-parallel",
+        "pipeline-parallel",
+        "context-parallel",
+        "communication",
+        "mixed-precision"
+      ],
+      "toc": true
+    },
+    {
       "id": "mixture-of-experts",
       "source": "model_arch/Advanced LLMs 4 (Mixture of Experts).md",
       "section": "model-arch",
