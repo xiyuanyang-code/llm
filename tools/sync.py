@@ -619,6 +619,42 @@ class Doc:
             chunk = HIGHLIGHT_RE.sub(lambda m: f"<mark>{m.group(1)}</mark>", chunk)
         return chunk
 
+    def _lint_math_balance(self, lines) -> None:
+        """按段落检查公式分隔符有没有配对。
+
+        Goldmark 的 passthrough 是在**段落**这一级匹配 $$...$$ 的，段落里夹了空行就断了：
+        开头的 $$ 找不到收尾，整块退化成一行 LaTeX 源码；多出来的 $$ 又会和后面那个配成
+        一对，渲染出一个空公式，顺带把紧随其后的公式一起带歪。实测踩过：一个 $$ 块的
+        收尾前多了个空行、后面紧跟着另一个 $$ 块，页面上直接显示
+        `$$ \\begin{aligned} ... \\end{aligned}`。
+        所以在 sync 阶段按段落查一次配对，别等它坏在页面上（脚本提前 warning，
+        `--strict` 下会失败）。
+        """
+        paragraph, start = [], 0
+
+        def flush():
+            if not paragraph:
+                return
+            text = "\n".join(paragraph)
+            for count, what in ((text.count("$$"), "$$"), (text.count("$"), "$")):
+                if count % 2:
+                    self.report.warn(
+                        f"{self.source_rel} 第 {start + 1} 行起这一段里的 {what} 没有配对"
+                        "（$$ 块里夹空行、或漏写收尾的 $$ 都会这样），"
+                        "页面上会原样显示成 LaTeX 源码，请检查这一段的公式"
+                    )
+                    return
+
+        for offset, line in enumerate(lines):
+            if line.strip():
+                if not paragraph:
+                    start = offset
+                paragraph.append(line)
+            else:
+                flush()
+                paragraph = []
+        flush()
+
     def body(self, text: str) -> str:
         text = text.replace("\r\n", "\n").replace("\r", "\n")
         blocks, unclosed = split_fences(text)
@@ -642,6 +678,7 @@ class Doc:
             if self.demote_h1:
                 # 笔记正文里的 H1 会和 PaperMod 的页面标题打架，降一级。
                 lines = [H1_RE.sub("## ", ln) if H1_RE.match(ln) else ln for ln in lines]
+            self._lint_math_balance(lines)
             chunk = "\n".join(lines)
             out.append("".join(
                 part if kind != "plain" else self._rewrite_plain(part)

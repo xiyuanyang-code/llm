@@ -156,3 +156,4 @@ python3 tools/sync.py                              # 只生成，不预览
 - **先切代码块再做任何重写**。`slime-training.md` 的 python 代码块里有 `if self.role == "critic":` 这类 `==` 比较运算符，不先隔离代码块就会被高亮替换改坏。
 - **图片走 leaf page bundle + 相对路径**。站点挂在 `/llm/` 子路径下，写死的 `/images/x.png` 会解析到域名根目录而 404；相对路径由 PaperMod 的 `render-image.html` 通过 `.PageInner.Resources` 解析，自动带上正确前缀。
 - **围栏一律写明语言**（ASCII 图写 ```` ```text ````）。Hugo 0.146 会把**没有语言标记**的围栏当成 GoAT 渲染成 SVG 矢量图，等宽文本会变成一张按容器宽度拉伸的图，字号完全失控。转换器会在 sync 阶段对未标注语言的围栏报警告。`HUGO_VERSION` 见 `.github/workflows/gh-pages.yaml`，与本地 `brew install hugo` 保持一致。
+- **`$$` 块里不要夹空行**。passthrough 是在**段落**这一级匹配 `$$...$$` 的，段落中间一夹空行就断了：开头的 `$$` 找不到收尾，整块退化成一行 LaTeX 源码；多出来的 `$$` 还会和后面那个配成一对，渲染出一个空公式，把紧随其后的公式一起带歪。转换器会按段落检查 `$` / `$$` 的配对情况并在 sync 阶段报警告（`_lint_math_balance()`）。想自己复核渲染结果，可以对构建产物 grep 一遍 `$`（排除 `<script>` / `<pre>` / `<code>`）：正常情况应该是 0 个。
