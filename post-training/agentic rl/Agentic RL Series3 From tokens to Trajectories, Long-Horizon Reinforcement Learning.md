@@ -112,17 +112,11 @@ DAPO (https://arxiv.org/pdf/2503.14476) 是字节在 GRPO 基础上实现的一�
 
 $$
 \begin{aligned}
-
 \mathcal{J}_{\text{DAPO}}(\theta) =\quad& \mathbb{E}_{(q,a)\sim \mathcal{D}, \{o_i\}_{i=1}^G\sim \pi_{\theta_\text{old}}(\cdot\mid q)}\\&
-
 \Bigg[\frac{1}{\sum_{i=1}^{G}|o_i|}\sum_{i=1}^{G}\sum_{t=1}^{|o_i|}
-
 \min \Big( r_{i,t}(\theta) \hat{A}_{i,t},
-
 \ \text{clip} \Big( r_{i,t}(\theta), 1 - {\varepsilon_{\text{low}}}, 1 + {\varepsilon_{\text{high}}} \Big) \hat{A}_{i,t} \Big) \Bigg]
-
 \\
-
 \text{s.t.}\quad& 0< \Big|\{o_i\mid\texttt{is\_equivalent}(a,o_i)\}\Big|< G,
 \end{aligned}
 $$
@@ -225,20 +219,12 @@ $$
 
 $$
 \begin{align}
-
 \mathcal{J}_\text{GSPO} (\theta) =
-
 \mathbb{E}_{ x \sim \mathcal{D},\, \{y_i\}_{i=1}^G \sim \pi_{\theta_\text{old}}( \cdot | x) }
-
 \left[
-
 \frac{1}{G} \sum_{i=1}^{G}
-
 \min \left( s_{i}(\theta) \widehat{A}_{i}, \, \mathrm{clip} \left( s_{i}(\theta), 1 - {\varepsilon}, 1 + {\varepsilon} \right) \widehat{A}_{i} \right)
-
 \right]
-
-
 \end{align}
 $$
 $$
@@ -268,12 +254,11 @@ $$
 R_i(\theta)= \prod_{t=1}^{|y_i|} \frac{\pi_\theta(y_{i,t}|x,y_{i,<t})} {\pi_{\mathrm{old}}(y_{i,t}|x,y_{i,<t})} = \prod_{t=1}^{|y_i|}r_{i,t}(\theta)
 $$
 但是这会带来一个问题: 对于超长的 sequence, 若干浮点数的连乘积可能会爆炸或者下溢出到 0，导致数值不稳定性。对于这个问题，GSPO 提出的解决方案是，取长度归一化后的作为 $S_i$:
+
 $$
 s_{i}(\theta) = \left( \frac{ \pi_{\theta} (y_i | x) }{ \pi_{\theta_\text{old}} (y_i | x)} \right)^{\frac{1}{|y_i|}}
-
 =
-
-\exp \left( \frac{1}{|y_i|} \sum_{t=1}^{|y_i|} \log \frac{ \pi_{\theta} (y_{i,t} | x, y_{i,<t}) }{ \pi_{\theta_\text{old}} (y_{i,t} | x,y_{i,<t})} \right).
+\exp \left( \frac{1}{|y_i|} \sum_{t=1}^{|y_i|} \log \frac{ \pi_{\theta} (y_{i,t} | x, y_{i,<t}) }{ \pi_{\theta_\text{old}} (y_{i,t} | x,y_{i,<t})} \right)
 $$
 
 比如，如果 1000 个 token-ratio 都是 1.01, 加上归一化后（本质是几何平均数），最终得到的 IS 还是 1.01，保证数值稳定性。但是数学上，这样的引入会破坏无偏性。
