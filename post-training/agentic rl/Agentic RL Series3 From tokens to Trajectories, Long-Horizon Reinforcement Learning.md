@@ -236,9 +236,7 @@ $$
 $$
 
 $$
-s_{i}(\theta) = \left( \frac{ \pi_{\theta} (y_i | x) }{ \pi_{\theta_\text{old}} (y_i | x)} \right)^{\frac{1}{|y_i|}}
-=
-\exp \left( \frac{1}{|y_i|} \sum_{t=1}^{|y_i|} \log \frac{ \pi_{\theta} (y_{i,t} | x, y_{i,<t}) }{ \pi_{\theta_\text{old}} (y_{i,t} | x,y_{i,<t})} \right).
+s_{i}(\theta) = \left( \frac{ \pi_{\theta} (y_i | x) }{\pi_{\theta_\text{old}} (y_i | x)} \right)^{\frac{1}{|y_i|}} = \exp \left( \frac{1}{|y_i|} \sum_{t=1}^{|y_i|} \log \frac{ \pi_{\theta} (y_{i,t} | x, y_{i,<t}) }{ \pi_{\theta_\text{old}} (y_{i,t} | x,y_{i,<t})} \right).
 $$
 
 和 token-level 的 ratio 比较，sequence-level IS 本质上是一个连乘积的关系，对于自回归模型，一条 Response 的概率为：
