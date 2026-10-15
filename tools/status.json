@@ -381,8 +381,7 @@
         "llm-training",
         "post-training"
       ],
-      "toc": true,
-      "stub": true
+      "toc": true
     },
     {
       "id": "midtraining-overview",

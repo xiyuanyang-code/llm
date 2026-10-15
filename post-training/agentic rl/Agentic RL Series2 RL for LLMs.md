@@ -265,6 +265,7 @@ $$
 这个形式有两个重要性质：
 - 对任意采样 Token，估计值非负。
 - 如果 Token 从当前 Policy $\pi_\theta$ 中采样，那么这个估计量的期望等于对应状态的 Forward KL，即 $D_{\mathrm{KL}}(\pi_\theta\Vert\pi_{\mathrm{ref}}$)。
+	- 从数学意义上解释，就是在保证无偏性的同时，可以保证方差下降
 
 定义 KL Regularization：
 
@@ -346,7 +347,7 @@ $$
 > 这里的 PPO 是指最初始的 PPO 形式，没有加上 KL 散度项 (不是 RLHF-PPO)
 ### GRPO
 
-原始 GRPO 的目标包含：
+原始 GRPO 的目标包含，在这里暂时忽略 off-policy，假设 $\pi_{\theta} = \pi_{\text{old}}$:
 
 $$
 J_{\mathrm{GRPO}} = J_{\mathrm{clip}}-\beta J_{\mathrm{KL}}
