@@ -50,6 +50,7 @@ $$
 $$
 K_3=\frac qp+\log\frac pq-1
 $$
+
 $$
 \nabla_\theta K_3 =\left(1-\frac qp\right)\nabla_\theta\log p
 $$
@@ -227,18 +228,16 @@ $$
 \right]
 \end{align}
 $$
+
 $$
 \begin{align}
-
 \widehat{A}_{i} = \frac{r(x, y_i) - \mathrm{mean} \left( \{ r(x, y_i) \}_{i=1}^G \right) }{ \mathrm{std} \left( \{ r(x, y_i) \}_{i=1}^G \right) }
-
 \end{align}
 $$
+
 $$
 s_{i}(\theta) = \left( \frac{ \pi_{\theta} (y_i | x) }{ \pi_{\theta_\text{old}} (y_i | x)} \right)^{\frac{1}{|y_i|}}
-
 =
-
 \exp \left( \frac{1}{|y_i|} \sum_{t=1}^{|y_i|} \log \frac{ \pi_{\theta} (y_{i,t} | x, y_{i,<t}) }{ \pi_{\theta_\text{old}} (y_{i,t} | x,y_{i,<t})} \right).
 $$
 
@@ -246,6 +245,7 @@ $$
 $$
  \pi_\theta(y|x)= \prod_{t=1}^{|y|} \pi_\theta(y_t|x,y_{<t})
 $$
+
 $$
 R_i(\theta)= \frac{\pi_\theta(y_i|x)} {\pi_{\mathrm{old}}(y_i|x)}
 $$
@@ -254,11 +254,8 @@ $$
 R_i(\theta)= \prod_{t=1}^{|y_i|} \frac{\pi_\theta(y_{i,t}|x,y_{i,<t})} {\pi_{\mathrm{old}}(y_{i,t}|x,y_{i,<t})} = \prod_{t=1}^{|y_i|}r_{i,t}(\theta)
 $$
 但是这会带来一个问题: 对于超长的 sequence, 若干浮点数的连乘积可能会爆炸或者下溢出到 0，导致数值不稳定性。对于这个问题，GSPO 提出的解决方案是，取长度归一化后的作为 $S_i$:
-
 $$
-s_{i}(\theta) = \left( \frac{ \pi_{\theta} (y_i | x) }{ \pi_{\theta_\text{old}} (y_i | x)} \right)^{\frac{1}{|y_i|}}
-=
-\exp \left( \frac{1}{|y_i|} \sum_{t=1}^{|y_i|} \log \frac{ \pi_{\theta} (y_{i,t} | x, y_{i,<t}) }{ \pi_{\theta_\text{old}} (y_{i,t} | x,y_{i,<t})} \right)
+s_{i}(\theta) = \left( \frac{ \pi_{\theta} (y_i | x) }{ \pi_{\theta_\text{old}} (y_i | x)} \right)^{\frac{1}{|y_i|}} = \exp \left( \frac{1}{|y_i|} \sum_{t=1}^{|y_i|} \log \frac{ \pi_{\theta} (y_{i,t} | x, y_{i,<t}) }{ \pi_{\theta_\text{old}} (y_{i,t} | x,y_{i,<t})} \right)
 $$
 
 比如，如果 1000 个 token-ratio 都是 1.01, 加上归一化后（本质是几何平均数），最终得到的 IS 还是 1.01，保证数值稳定性。但是数学上，这样的引入会破坏无偏性。
@@ -270,6 +267,7 @@ $$
 $$
 \nabla_\theta J_{\mathrm{GRPO}} = \frac1G\sum_{i=1}^G \frac{\hat A_i}{|y_i|} \sum_{t=1}^{|y_i|} \underbrace{r_{i,t}}_{\text{Token-Level Weight}} \nabla_\theta\log\pi_\theta(y_{i,t}|s_{i,t})
 $$
+
 $$
 GC_{\text{GRPO}} = \hat{A_i} \ r_{i,t}
 $$
